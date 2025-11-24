@@ -24,7 +24,7 @@ class ParamComp:
 #-------------------------------------#
 # ND Mechanical parameter definition
 #-------------------------------------#
-pnd=NdParamMec(a=0.5, eta=1.0E-8, k=0.4)
+pnd=NdParamMec(a=0.5, eta=1.0E-11, k=0.4)
 
 #-------------------------------------------#
 # Computational parameter definition
@@ -190,7 +190,7 @@ plt.plot(T,np.log10(np.exp(Phi)),'-+k')
 plt.xlabel('Time (ND)')
 plt.ylabel('Log Slip rate (ND)')
 plt.title('Slip rate evolution (k=%.2f, a=%.2f)' % (pnd.k, pnd.a))
-plt.xlim([0, 100])
+#plt.xlim([0, 100])
 
 #plt.savefig('./slip_rate_k%.2f_a%.2f.pdf' % (pnd.k, pnd.a))
 plt.show()
