@@ -232,17 +232,17 @@ Vpointln=np.log(Vpoint)
 #-------------------------------------------#
 # Plot
 #-------------------------------------------#
-#plt.plot(T,Vln,'-+k')
+plt.plot(T,Vln,'-+k')
 #plt.show()
 
-plt.plot(V[1:],Vpoint,'-+k')
+#plt.plot(V[1:],Vpoint,'-+k')
 
 plt.xlabel('Time (ND)')
 plt.ylabel('Log Slip rate (ND)')
 plt.title(r'Slip rate evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a))
 #plt.xlim([0, 100])
 
-#plt.savefig('./slip_rate_k%.2f_a%.2f.pdf' % (pnd.k, pnd.a))
+plt.savefig('./slip_rate_etaE-11.pdf')
 plt.grid()
 plt.show()
 
