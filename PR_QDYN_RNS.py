@@ -29,7 +29,12 @@ pnd=NdParamMec(a=0.5, eta=1.0E-11, k=0.4)
 #-------------------------------------------#
 # Computational parameter definition
 #-------------------------------------------#
-pc=ParamComp(tol=1.0E-10, nitrkmax=30, nitmax=10000, hmin=1.0E-12, hmax=1.0E10, safe=0.8)
+pc=ParamComp(tol=1.0E-10,
+             nitrkmax=30,
+             nitmax=10000,
+             hmin=1.0E-12,
+             hmax=1.0E10,
+             safe=0.8)
 
 #-------------------------------------------#
 # Initial conditions (ND variables)
