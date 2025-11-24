@@ -1,9 +1,4 @@
-import os
 import numpy as np
-import matplotlib
-# # Use a non-interactive backend when no DISPLAY is available (headless environments)
-# if not os.environ.get('DISPLAY'):
-#     matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pickle
 
