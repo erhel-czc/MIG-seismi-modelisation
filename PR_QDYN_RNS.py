@@ -79,7 +79,7 @@ class Result:
         plt.grid()
 
         # plt.xlim([0, 100])
-        plt.savefig('images/modif_parameters/slip_rate_k%.2f_a%.2f.pdf' % (self.pnd.k, self.pnd.a))
+        #plt.savefig('images/modif_parameters/slip_rate_k%.2f_a%.2f.pdf' % (self.pnd.k, self.pnd.a))
 
     def phase_portrait(self):
         plt.figure('Phase portrait')
@@ -92,7 +92,7 @@ class Result:
         plt.colorbar(sc, label='Time progression')
         plt.grid()
 
-        plt.savefig('images/modif_parameters/phase_portrait_k%.2f_a%.2f.pdf' % (self.pnd.k, self.pnd.a))
+        #plt.savefig('images/modif_parameters/phase_portrait_k%.2f_a%.2f.pdf' % (self.pnd.k, self.pnd.a))
 
         plt.show()
 
