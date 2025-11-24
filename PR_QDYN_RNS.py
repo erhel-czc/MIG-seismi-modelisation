@@ -160,7 +160,7 @@ def rkf(phi,nu,h,pnd,pc):
 
    
 
-    return phi,nu,h
+    return phi,nu,dphi,dnu,h
 
 #-------------------------------------------#
 # Iterations
@@ -168,10 +168,13 @@ def rkf(phi,nu,h,pnd,pc):
 T=np.array([t])
 Phi=np.array([phi])
 Nu=np.array([nu])
+Dphi=np.array([])
+Dnu=np.array([])
+
 for iter in range(0,pc.nitmax,1):
     
     #--update phi, nu and h
-    phi,nu,h = rkf(phi,nu,h,pnd,pc)
+    phi,nu,dphi,dnu,h = rkf(phi,nu,h,pnd,pc)
     
     #--update time
     t+=h
@@ -180,12 +183,27 @@ for iter in range(0,pc.nitmax,1):
     T=np.append(T,[t])
     Phi=np.append(Phi,[phi])
     Nu=np.append(Nu,[nu])
+    Dphi=np.append(Dphi,[dphi])
+    Dnu=np.append(Dnu,[dnu])
+
+
+V=np.exp(Phi)
+Vln=np.log(V)
+Dt=np.diff(T)
+Phipoint=Dphi/Dt
+Vpoint=V[1:]*Phipoint
+Vpointln=np.log(Vpoint)
+
+
 
 
 #-------------------------------------------#
 # Plot
 #-------------------------------------------#
-plt.plot(T,np.log10(np.exp(Phi)),'-+k')
+#plt.plot(T,Vln,'-+k')
+#plt.show()
+
+plt.plot(V[1:],Vpoint,'-+k')
 plt.show()
 
 #plt.plot(T,np.log10(np.exp(Nu)),'-+k')
