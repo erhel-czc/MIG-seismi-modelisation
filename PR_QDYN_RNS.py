@@ -257,7 +257,7 @@ def rkf(phi,nu,h,pnd,pc):
 
    
 
-    return phi,nu,dphi,dnu,h
+    return phi,nu,dphi,dnu,h # type: ignore
 
 #-------------------------------------------#
 # Iterations
