@@ -249,38 +249,37 @@ def rkf(phi,nu,h,pnd,pc):
 # Iterations
 #-------------------------------------------#
 
-T=np.array([t])
-Phi=np.array([phi])
-Nu=np.array([nu])
-Dphi=np.array([])
-Dnu=np.array([])
+if __name__ == "__main__": #to allow import without running the simulation
+    T=np.array([t])
+    Phi=np.array([phi])
+    Nu=np.array([nu])
+    Dphi=np.array([])
+    Dnu=np.array([])
 
-for iter in range(0,pc.nitmax,1):
-    #--update phi, nu and h
-    phi,nu,dphi,dnu,h = rkf(phi,nu,h,pnd,pc)
+    for iter in range(0,pc.nitmax,1):
+        #--update phi, nu and h
+        phi,nu,dphi,dnu,h = rkf(phi,nu,h,pnd,pc)
 
-    #--update time
-    t+=h
+        #--update time
+        t+=h
 
-    #--store results
-    T=np.append(T,[t])
-    Phi=np.append(Phi,[phi])
-    Nu=np.append(Nu,[nu])
-    Dphi=np.append(Dphi,[dphi])
-    Dnu=np.append(Dnu,[dnu])
+        #--store results
+        T=np.append(T,[t])
+        Phi=np.append(Phi,[phi])
+        Nu=np.append(Nu,[nu])
+        Dphi=np.append(Dphi,[dphi])
+        Dnu=np.append(Dnu,[dnu])
 
 
-V=np.exp(Phi)
-Vln=np.log(V)
-Dt=np.diff(T)
-Phipoint=Dphi/Dt
-Vpoint=V[1:]*Phipoint
-Vpointln=np.log(Vpoint)
+    V=np.exp(Phi)
+    Vln=np.log(V)
+    Dt=np.diff(T)
+    Phipoint=Dphi/Dt
+    Vpoint=V[1:]*Phipoint
+    Vpointln=np.log(Vpoint)
 
-#-------------------------------------------#
-# Save results
-#-------------------------------------------#
-Result(T, V, Vpoint, Nu, Phi, pd, pnd, pc).save_results() #add filename if needed (filename = "custom_name.pkl")
+    #save results
+    Result(T, V, Vpoint, Nu, Phi, pd, pnd, pc).save_results() #add filename if needed (filename = "custom_name.pkl")
 
 
 
