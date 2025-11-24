@@ -1,9 +1,9 @@
 import os
 import numpy as np
 import matplotlib
-# Use a non-interactive backend when no DISPLAY is available (headless environments)
-if not os.environ.get('DISPLAY'):
-    matplotlib.use('Agg')
+# # Use a non-interactive backend when no DISPLAY is available (headless environments)
+# if not os.environ.get('DISPLAY'):
+#     matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pickle
 
@@ -71,20 +71,29 @@ class Result:
 
     def slip_rate_evolution(self):
         plt.figure('Slip rate evolution')
-        plt.plot(self.T, np.log(self.V),'-+k')
+
+        plt.plot(self.T, np.log(self.V), '-k')
         plt.xlabel('Time (ND)')
         plt.ylabel('Log Slip rate (ND)')
         plt.title(r'Slip rate evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
         plt.grid()
-        plt.show()
+
+        # plt.xlim([0, 100])
+        plt.savefig('images/modif_parameters/slip_rate_k%.2f_a%.2f.pdf' % (self.pnd.k, self.pnd.a))
 
     def phase_portrait(self):
         plt.figure('Phase portrait')
-        plt.plot(self.V[1:],self.Vpoint,'-+k')
+
+        sc = plt.scatter(self.V[1:], self.Vpoint, c=self.T[1:], cmap='viridis', marker='+')
+        plt.plot(self.V[1:], self.Vpoint, '-k', alpha=0.3)
         plt.xlabel('Speed (ND)')
         plt.ylabel('Acceleration (ND)')
         plt.title(r'Phase portrait ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
+        plt.colorbar(sc, label='Time progression')
         plt.grid()
+
+        plt.savefig('images/modif_parameters/phase_portrait_k%.2f_a%.2f.pdf' % (self.pnd.k, self.pnd.a))
+
         plt.show()
 
 
@@ -291,36 +300,33 @@ if __name__ == "__main__": #to allow import without running the simulation
 #-------------------------------------------#
 # Plot
 #-------------------------------------------#
-
-""" Slip rate evolution """
-plt.figure('Slip rate evolution')
-
-plt.plot(T,Vln,'-k')
-plt.xlabel('Time (ND)')
-plt.ylabel('Log Slip rate (ND)')
-plt.title(r'Slip rate evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a))
-plt.grid()
-
-#plt.xlim([0, 100])
-plt.savefig('images/modif_parameters/slip_rate_k%.2f_a%.2f.pdf' % (pnd.k, pnd.a))
-
-""" Phase portrait """
-plt.figure('Phase portrait')
-
-sc = plt.scatter(V[1:], Vpoint, c=T[1:], cmap='viridis', marker='+')
-plt.plot(V[1:], Vpoint, '-k', alpha=0.3)
-plt.xlabel('Speed (ND)')
-plt.ylabel('Acceleration (ND)')
-plt.title(r'Phase portrait ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a))
-plt.colorbar(sc, label='Time progression')
-plt.grid()
-
-plt.savefig('images/modif_parameters/phase_portrait_k%.2f_a%.2f.pdf' % (pnd.k, pnd.a))
-
-plt.show()
-
-#plt.plot(T,np.log10(np.exp(Nu)),'-+k')
-#plt.show()
-
-#plt.plot(T,pnd.a*Phi+Nu,'-+k')
-#plt.show()
+#
+# """ Slip rate evolution """
+# plt.figure('Slip rate evolution')
+#
+# plt.plot(T,Vln,'-k')
+# plt.xlabel('Time (ND)')
+# plt.ylabel('Log Slip rate (ND)')
+# plt.title(r'Slip rate evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a))
+# plt.grid()
+#
+# #plt.xlim([0, 100])
+# plt.savefig('images/modif_parameters/slip_rate_k%.2f_a%.2f.pdf' % (pnd.k, pnd.a))
+#
+# """ Phase portrait """
+# plt.figure('Phase portrait')
+#
+# sc = plt.scatter(V[1:], Vpoint, c=T[1:], cmap='viridis', marker='+')
+# plt.plot(V[1:], Vpoint, '-k', alpha=0.3)
+# plt.xlabel('Speed (ND)')
+# plt.ylabel('Acceleration (ND)')
+# plt.title(r'Phase portrait ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a))
+# plt.colorbar(sc, label='Time progression')
+# plt.grid()
+#
+# plt.savefig('images/modif_parameters/phase_portrait_k%.2f_a%.2f.pdf' % (pnd.k, pnd.a))
+#
+# plt.show()
+#
+# #plt.plot(T,np.log10(np.exp(Nu)),'-+k')
+# #plt.show()
