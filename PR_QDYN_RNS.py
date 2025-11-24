@@ -56,7 +56,7 @@ pd = ParamMec(k_rigidity=3.0E10, # rigidity (Pa)
 #-------------------------------------#
 pnd=NdParamMec(a=0.6,
                eta=1.0E-8,
-               k=0.3)
+               k=0.41)
 
 #pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n))
 
@@ -250,7 +250,7 @@ plt.title(r'Slip rate evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a)
 plt.grid()
 
 #plt.xlim([0, 100])
-#plt.savefig('images/modif_parameters/slip_rate_k%.2f_a%.2f.pdf' % (pnd.k, pnd.a))
+plt.savefig('images/modif_parameters/slip_rate_k%.2f_a%.2f.pdf' % (pnd.k, pnd.a))
 
 """ Phase portrait """
 plt.figure('Phase portrait')
@@ -263,7 +263,7 @@ plt.title(r'Phase portrait ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a))
 plt.colorbar(sc, label='Time progression')
 plt.grid()
 
-#plt.savefig('images/modif_parameters/phase_portrait_k%.2f_a%.2f.pdf' % (pnd.k, pnd.a))
+plt.savefig('images/modif_parameters/phase_portrait_k%.2f_a%.2f.pdf' % (pnd.k, pnd.a))
 
 plt.show()
 
