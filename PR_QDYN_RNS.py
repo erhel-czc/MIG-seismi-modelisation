@@ -1,6 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+class ParamMec:
+    "Dimensional Mechanical parameters"
+
+    def __init__(self, k_rigidity, a_fric, b_fric, eta_visc, sigma_n, dc, V_p):
+        self.k_rigidity=k_rigidity
+        self.a_fric=a_fric
+        self.b_fric=b_fric
+        self.eta_visc=eta_visc
+        self.sigma_n=sigma_n
+        self.dc=dc
+        self.V_p=V_p
+
+        
 
 class NdParamMec:
     "Non dimensional Mechanical parameters"
@@ -20,11 +33,25 @@ class ParamComp:
         self.hmin=hmin # minimum time step
         self.hmax=hmax # maximum time step (CFL for diffusion equation)
         self.safe=safe
-    
+
+#-------------------------------------#
+# Dimensional Mechanical parameter definition
+#-------------------------------------#
+
+pd = ParamMec(k_rigidity=3.0E10, # rigidity (Pa)
+              a_fric=0.005,     # direct effect coefficient
+              b_fric=0.01,      # evolution effect coefficient
+              eta_visc=1.0E18,  # viscosity (Pa.s)
+              sigma_n=50.0E6,   # normal stress (Pa)
+              dc=0.01,          # critical slip distance (m)
+              V_p=1.0E-6)       # tectonic speed (m/s)
+
 #-------------------------------------#
 # ND Mechanical parameter definition
 #-------------------------------------#
 pnd=NdParamMec(a=0.5, eta=1.0E-11, k=0.4)
+
+#pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n))
 
 #-------------------------------------------#
 # Computational parameter definition
@@ -194,10 +221,11 @@ plt.plot(T,np.log10(np.exp(Phi)),'-+k')
 
 plt.xlabel('Time (ND)')
 plt.ylabel('Log Slip rate (ND)')
-plt.title('Slip rate evolution (k=%.2f, a=%.2f)' % (pnd.k, pnd.a))
+plt.title(r'Slip rate evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a))
 #plt.xlim([0, 100])
 
 #plt.savefig('./slip_rate_k%.2f_a%.2f.pdf' % (pnd.k, pnd.a))
+plt.grid()
 plt.show()
 
 #plt.plot(T,np.log10(np.exp(Nu)),'-+k')
