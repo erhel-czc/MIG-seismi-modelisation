@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pickle
 
 class ParamMec:
     "Dimensional Mechanical parameters"
@@ -33,6 +34,40 @@ class ParamComp:
         self.hmin=hmin # minimum time step
         self.hmax=hmax # maximum time step (CFL for diffusion equation)
         self.safe=safe
+
+class Result:
+    "Results storage"
+
+    def __init__(self, T, V, Vpoint, Nu, Phi, pd, pnd, pc):
+        self.T=T
+        self.V=V
+        self.Vpoint=Vpoint
+        self.Nu=Nu
+        self.Phi=Phi
+        self.pd=pd
+        self.pnd=pnd
+        self.pc=pc
+        
+    def slip_rate_evolution(self):
+        plt.figure('Slip rate evolution')
+        plt.plot(T,Vln,'-+k')
+        plt.xlabel('Time (ND)')
+        plt.ylabel('Log Slip rate (ND)')
+        plt.title(r'Slip rate evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a))
+        plt.grid()
+        plt.show()
+    
+    def phase_portrait(self):
+        plt.figure('Phase portrait')
+        plt.plot(V[1:],Vpoint,'-+k')
+        plt.xlabel('Speed (ND)')
+        plt.ylabel('Acceleration (ND)')
+        plt.title(r'Phase portrait ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a))
+        plt.grid()
+        plt.show()
+    
+    
+
 
 #-------------------------------------#
 # Dimensional Mechanical parameter definition
@@ -234,27 +269,27 @@ Vpointln=np.log(Vpoint)
 #-------------------------------------------#
 
 """ Slip rate evolution """
-plt.figure('Slip rate evolution')
+#plt.figure('Slip rate evolution')
 
-plt.plot(T,Vln,'-+k')
-plt.xlabel('Time (ND)')
-plt.ylabel('Log Slip rate (ND)')
-plt.title(r'Slip rate evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a))
-plt.grid()
+#plt.plot(T,Vln,'-+k')
+#plt.xlabel('Time (ND)')
+#plt.ylabel('Log Slip rate (ND)')
+#plt.title(r'Slip rate evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a))
+#plt.grid()
 
 #plt.xlim([0, 100])
 #plt.savefig('./slip_rate_k%.2f_a%.2f.pdf' % (pnd.k, pnd.a))
 
-""" Phase portrait """
-plt.figure('Phase portrait')
+#""" Phase portrait """
+#plt.figure('Phase portrait')
 
-plt.plot(V[1:],Vpoint,'-+k')
-plt.xlabel('Speed (ND)')
-plt.ylabel('Acceleration (ND)')
-plt.title(r'Phase portrait ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a))
-plt.grid()
+#plt.plot(V[1:],Vpoint,'-+k')
+#plt.xlabel('Speed (ND)')
+#plt.ylabel('Acceleration (ND)')
+#plt.title(r'Phase portrait ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a))
+#plt.grid()
 
-plt.show()
+#plt.show()
 
 #plt.plot(T,np.log10(np.exp(Nu)),'-+k')
 #plt.show()
@@ -262,3 +297,11 @@ plt.show()
 #plt.plot(T,pnd.a*Phi+Nu,'-+k')
 #plt.show()
 
+
+#-------------------------------------------#
+# Save results
+#-------------------------------------------#
+
+with open('results.pkl', 'wb') as f:
+    pickle.dump(Result(T, V, Vpoint, Nu, Phi, pd, pnd, pc), f)
+f.close()
