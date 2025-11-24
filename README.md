@@ -2,4 +2,7 @@
 
 
 ## Jour 1
+
 - images/modif_parameters : graphes de $\log(v)=f(t)$ et $\log(v)=f(t)$ en ND pour des couples $(k,a)$ différent pour observer un comportement stable et instable (avec $\eta$ =1.0E-8), et graphe avec $\eta=1,0.10^{-11}$ (régime proche du quasi-statique)
+
+- écriture du portrait de phase adimensionné de l'accélération en fonction de la vitesse
