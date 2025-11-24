@@ -232,18 +232,28 @@ Vpointln=np.log(Vpoint)
 #-------------------------------------------#
 # Plot
 #-------------------------------------------#
+
+""" Slip rate evolution """
+plt.figure('Slip rate evolution')
+
 plt.plot(T,Vln,'-+k')
-#plt.show()
-
-#plt.plot(V[1:],Vpoint,'-+k')
-
 plt.xlabel('Time (ND)')
 plt.ylabel('Log Slip rate (ND)')
 plt.title(r'Slip rate evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a))
-#plt.xlim([0, 100])
-
-plt.savefig('./slip_rate_etaE-11.pdf')
 plt.grid()
+
+#plt.xlim([0, 100])
+#plt.savefig('./slip_rate_k%.2f_a%.2f.pdf' % (pnd.k, pnd.a))
+
+""" Phase portrait """
+plt.figure('Phase portrait')
+
+plt.plot(V[1:],Vpoint,'-+k')
+plt.xlabel('Speed (ND)')
+plt.ylabel('Acceleration (ND)')
+plt.title(r'Phase portrait ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a))
+plt.grid()
+
 plt.show()
 
 #plt.plot(T,np.log10(np.exp(Nu)),'-+k')
