@@ -5,6 +5,7 @@ import matplotlib
 if not os.environ.get('DISPLAY'):
     matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import pickle
 
 class ParamMec:
     "Dimensional Mechanical parameters"
@@ -39,6 +40,56 @@ class ParamComp:
         self.hmax=hmax # maximum time step (CFL for diffusion equation)
         self.safe=safe
 
+class Result:
+    "Results storage"
+
+    def __init__(self, T, V, Vpoint, Nu, Phi, pd, pnd, pc, filename = ''):
+        self.T=T
+        self.V=V
+        self.Vpoint=Vpoint
+        self.Nu=Nu
+        self.Phi=Phi
+        self.pd=pd
+        self.pnd=pnd
+        self.pc=pc
+        if filename=='':
+            self.filename= f"{pnd.a}_{pnd.eta}_{pnd.k}.pkl"
+        else:
+            self.filename=filename
+
+    def save_results(self):
+        with open(f"Results/{self.filename}", 'wb') as f:
+            pickle.dump(self, f)
+        f.close()
+
+    @staticmethod
+    def load_results(filename):
+        with open(f"Results/{filename}", 'rb') as f:
+            data = pickle.load(f)
+        f.close()
+        return data
+
+    def slip_rate_evolution(self):
+        plt.figure('Slip rate evolution')
+        plt.plot(self.T, np.log(self.V),'-+k')
+        plt.xlabel('Time (ND)')
+        plt.ylabel('Log Slip rate (ND)')
+        plt.title(r'Slip rate evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
+        plt.grid()
+        plt.show()
+
+    def phase_portrait(self):
+        plt.figure('Phase portrait')
+        plt.plot(self.V[1:],self.Vpoint,'-+k')
+        plt.xlabel('Speed (ND)')
+        plt.ylabel('Acceleration (ND)')
+        plt.title(r'Phase portrait ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
+        plt.grid()
+        plt.show()
+
+
+
+
 #-------------------------------------#
 # Dimensional Mechanical parameter definition
 #-------------------------------------#
@@ -54,9 +105,7 @@ pd = ParamMec(k_rigidity=3.0E10, # rigidity (Pa)
 #-------------------------------------#
 # ND Mechanical parameter definition
 #-------------------------------------#
-pnd=NdParamMec(a=0.6,
-               eta=1.0E-8,
-               k=0.41)
+pnd=NdParamMec(a=0.5, eta=1.0E-11, k=0.4)
 
 #pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n))
 
@@ -204,35 +253,38 @@ def rkf(phi,nu,h,pnd,pc):
 #-------------------------------------------#
 # Iterations
 #-------------------------------------------#
-T=np.array([t])
-Phi=np.array([phi])
-Nu=np.array([nu])
-Dphi=np.array([])
-Dnu=np.array([])
 
-for iter in range(0,pc.nitmax,1):
-    
-    #--update phi, nu and h
-    phi,nu,dphi,dnu,h = rkf(phi,nu,h,pnd,pc)
-    
-    #--update time
-    t+=h
+if __name__ == "__main__": #to allow import without running the simulation
+    T=np.array([t])
+    Phi=np.array([phi])
+    Nu=np.array([nu])
+    Dphi=np.array([])
+    Dnu=np.array([])
 
-    #--store results
-    T=np.append(T,[t])
-    Phi=np.append(Phi,[phi])
-    Nu=np.append(Nu,[nu])
-    Dphi=np.append(Dphi,[dphi])
-    Dnu=np.append(Dnu,[dnu])
+    for iter in range(0,pc.nitmax,1):
+        #--update phi, nu and h
+        phi,nu,dphi,dnu,h = rkf(phi,nu,h,pnd,pc)
+
+        #--update time
+        t+=h
+
+        #--store results
+        T=np.append(T,[t])
+        Phi=np.append(Phi,[phi])
+        Nu=np.append(Nu,[nu])
+        Dphi=np.append(Dphi,[dphi])
+        Dnu=np.append(Dnu,[dnu])
 
 
-V=np.exp(Phi)
-Vln=np.log(V)
-Dt=np.diff(T)
-Phipoint=Dphi/Dt
-Vpoint=V[1:]*Phipoint
-Vpointln=np.log(Vpoint)
+    V=np.exp(Phi)
+    Vln=np.log(V)
+    Dt=np.diff(T)
+    Phipoint=Dphi/Dt
+    Vpoint=V[1:]*Phipoint
+    Vpointln=np.log(Vpoint)
 
+    #save results
+    Result(T, V, Vpoint, Nu, Phi, pd, pnd, pc).save_results() #add filename if needed (filename = "custom_name.pkl")
 
 
 
@@ -272,4 +324,3 @@ plt.show()
 
 #plt.plot(T,pnd.a*Phi+Nu,'-+k')
 #plt.show()
-
