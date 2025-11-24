@@ -1,9 +1,14 @@
 # Louis
 .idea
+__pycache__/
 
 # Erhel
 ressources
 perso
+rapport/rapport.lyx~
 
-#Aymeric
+# Aymeric
 images/modif_parameters/.DS_Store
+
+# Leonard
+.DS_Store
