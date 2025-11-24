@@ -7,4 +7,7 @@
 - ajout d'une classe "dimensional parameters"
 - portrait de phase accélération = f(v)
 
-Objectif : modéliser la sismicité induite par injection de fluide en géothermie en Alsace.
+Objectif final : modéliser la sismicité induite par injection de fluide en géothermie en Alsace.
+Objectif pour les prochains jours :
+    - ajouter un modèle de pression (au début juste en escalier) modélisant l'injection de fluide
+    - nouveau modèle avec orientation
