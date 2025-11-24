@@ -5,8 +5,21 @@ import matplotlib.pyplot as plt
 class NdParamMec:
     "Non dimensional Mechanical parameters"
 
+    def __init__(self, a, eta, k):
+        self.a=a
+        self.eta=eta
+        self.k=k
+
 class ParamComp:
     "Computational parameters"
+
+    def __init__(self, tol, nitrkmax, nitmax, hmin, hmax, safe):
+        self.tol=tol
+        self.nitrkmax=nitrkmax
+        self.nitmax=nitmax
+        self.hmin=hmin
+        self.hmax=hmax
+        self.safe=safe
     
 #-------------------------------------#
 # ND Mechanical parameter definition
