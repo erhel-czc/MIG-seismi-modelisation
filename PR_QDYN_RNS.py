@@ -49,7 +49,7 @@ pd = ParamMec(k_rigidity=3.0E10, # rigidity (Pa)
 #-------------------------------------#
 # ND Mechanical parameter definition
 #-------------------------------------#
-pnd=NdParamMec(a=0.5, eta=1.0E-11, k=0.4)
+pnd=NdParamMec(a=0.5, eta=1.0E-8, k=0.4)
 
 #pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n))
 
