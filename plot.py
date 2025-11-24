@@ -1,8 +1,5 @@
-import pickle
+from PR_QDYN_RNS import Result
 
-with open('results.pkl', 'rb') as f:
-    result = pickle.load(f)
-f.close()
-
-result.slip_rate_evolution()
-result.phase_portrait()
+data = Result.load_results("0.5_1e-11_0.4.pkl") #Load previously saved results in the Results folder
+data.slip_rate_evolution()  #Plot slip rate evolution
+data.phase_portrait()      #Plot phase portrait

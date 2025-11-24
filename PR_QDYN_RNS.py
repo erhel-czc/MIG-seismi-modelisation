@@ -38,7 +38,7 @@ class ParamComp:
 class Result:
     "Results storage"
 
-    def __init__(self, T, V, Vpoint, Nu, Phi, pd, pnd, pc):
+    def __init__(self, T, V, Vpoint, Nu, Phi, pd, pnd, pc, filename = ''):
         self.T=T
         self.V=V
         self.Vpoint=Vpoint
@@ -47,22 +47,38 @@ class Result:
         self.pd=pd
         self.pnd=pnd
         self.pc=pc
-        
+        if filename=='':
+            self.filename= f"{pnd.a}_{pnd.eta}_{pnd.k}.pkl"
+        else:
+            self.filename=filename
+
+    def save_results(self):
+        with open(f"Results/{self.filename}", 'wb') as f:
+            pickle.dump(self, f)
+        f.close()
+
+    @staticmethod
+    def load_results(filename):
+        with open(f"Results/{filename}", 'rb') as f:
+            data = pickle.load(f)
+        f.close()
+        return data
+
     def slip_rate_evolution(self):
         plt.figure('Slip rate evolution')
-        plt.plot(T,Vln,'-+k')
+        plt.plot(self.T, np.log(self.V),'-+k')
         plt.xlabel('Time (ND)')
         plt.ylabel('Log Slip rate (ND)')
-        plt.title(r'Slip rate evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a))
+        plt.title(r'Slip rate evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
         plt.grid()
         plt.show()
     
     def phase_portrait(self):
         plt.figure('Phase portrait')
-        plt.plot(V[1:],Vpoint,'-+k')
+        plt.plot(self.V[1:],self.Vpoint,'-+k')
         plt.xlabel('Speed (ND)')
         plt.ylabel('Acceleration (ND)')
-        plt.title(r'Phase portrait ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a))
+        plt.title(r'Phase portrait ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
         plt.grid()
         plt.show()
     
@@ -232,6 +248,7 @@ def rkf(phi,nu,h,pnd,pc):
 #-------------------------------------------#
 # Iterations
 #-------------------------------------------#
+
 T=np.array([t])
 Phi=np.array([phi])
 Nu=np.array([nu])
@@ -239,10 +256,9 @@ Dphi=np.array([])
 Dnu=np.array([])
 
 for iter in range(0,pc.nitmax,1):
-    
     #--update phi, nu and h
     phi,nu,dphi,dnu,h = rkf(phi,nu,h,pnd,pc)
-    
+
     #--update time
     t+=h
 
@@ -261,6 +277,10 @@ Phipoint=Dphi/Dt
 Vpoint=V[1:]*Phipoint
 Vpointln=np.log(Vpoint)
 
+#-------------------------------------------#
+# Save results
+#-------------------------------------------#
+Result(T, V, Vpoint, Nu, Phi, pd, pnd, pc).save_results() #add filename if needed (filename = "custom_name.pkl")
 
 
 
@@ -296,12 +316,3 @@ Vpointln=np.log(Vpoint)
 
 #plt.plot(T,pnd.a*Phi+Nu,'-+k')
 #plt.show()
-
-
-#-------------------------------------------#
-# Save results
-#-------------------------------------------#
-
-with open('results.pkl', 'wb') as f:
-    pickle.dump(Result(T, V, Vpoint, Nu, Phi, pd, pnd, pc), f)
-f.close()
