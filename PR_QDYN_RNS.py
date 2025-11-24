@@ -14,31 +14,22 @@ class ParamComp:
     "Computational parameters"
 
     def __init__(self, tol, nitrkmax, nitmax, hmin, hmax, safe):
-        self.tol=tol
-        self.nitrkmax=nitrkmax
-        self.nitmax=nitmax
-        self.hmin=hmin
-        self.hmax=hmax
+        self.tol=tol # error tolerance
+        self.nitrkmax=nitrkmax # maximum number of iteration in a rkf step
+        self.nitmax=nitmax # maximum number of iterations
+        self.hmin=hmin # minimum time step
+        self.hmax=hmax # maximum time step (CFL for diffusion equation)
         self.safe=safe
     
 #-------------------------------------#
 # ND Mechanical parameter definition
 #-------------------------------------#
-pnd=NdParamMec()
-pnd.a=0.5
-pnd.eta=1.0E-8
-pnd.k=0.4
+pnd=NdParamMec(a=0.5, eta=1.0E-8, k=0.4)
 
 #-------------------------------------------#
 # Computational parameter definition
 #-------------------------------------------#
-pc=ParamComp()
-pc.tol=1.0E-10                        # error tolerance
-pc.nitrkmax=30                       # maximum number of iteration in a rkf step
-pc.nitmax=10000                        # maximum number of iterations 
-pc.hmin=1.0E-12                      # minimum time step
-pc.hmax=1.0E10                       # maximum time step (CFL for diffusion equation)
-pc.safe=0.8   
+pc=ParamComp(tol=1.0E-10, nitrkmax=30, nitmax=10000, hmin=1.0E-12, hmax=1.0E10, safe=0.8)
 
 #-------------------------------------------#
 # Initial conditions (ND variables)
