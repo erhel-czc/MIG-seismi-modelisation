@@ -24,12 +24,17 @@ class ParamComp:
 #-------------------------------------#
 # ND Mechanical parameter definition
 #-------------------------------------#
-pnd=NdParamMec(a=0.5, eta=1.0E-8, k=0.4)
+pnd=NdParamMec(a=0.5, eta=1.0E-11, k=0.4)
 
 #-------------------------------------------#
 # Computational parameter definition
 #-------------------------------------------#
-pc=ParamComp(tol=1.0E-10, nitrkmax=30, nitmax=10000, hmin=1.0E-12, hmax=1.0E10, safe=0.8)
+pc=ParamComp(tol=1.0E-10,
+             nitrkmax=30,
+             nitmax=10000,
+             hmin=1.0E-12,
+             hmax=1.0E10,
+             safe=0.8)
 
 #-------------------------------------------#
 # Initial conditions (ND variables)
@@ -204,6 +209,13 @@ Vpointln=np.log(Vpoint)
 #plt.show()
 
 plt.plot(V[1:],Vpoint,'-+k')
+
+plt.xlabel('Time (ND)')
+plt.ylabel('Log Slip rate (ND)')
+plt.title('Slip rate evolution (k=%.2f, a=%.2f)' % (pnd.k, pnd.a))
+#plt.xlim([0, 100])
+
+#plt.savefig('./slip_rate_k%.2f_a%.2f.pdf' % (pnd.k, pnd.a))
 plt.show()
 
 #plt.plot(T,np.log10(np.exp(Nu)),'-+k')
