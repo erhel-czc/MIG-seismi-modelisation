@@ -109,7 +109,7 @@ pd = ParamMec(k_rigidity=3.0E10, # rigidity (Pa)
 #-------------------------------------#
 # ND Mechanical parameter definition
 #-------------------------------------#
-pnd=NdParamMec(a=0.5, eta=1.0E-11, k=0.4)
+pnd=NdParamMec(a=0.6, eta=1.0E-11, k=0.4)
 
 #pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n))
 
@@ -287,41 +287,10 @@ if __name__ == "__main__": #to allow import without running the simulation
     Vpoint=V[1:]*Phipoint
     Vpointln=np.log(Vpoint)
 
-    #save results
+    # save results
     Result(T, V, Vpoint, Nu, Phi, pd, pnd, pc).save_results() #add filename if needed (filename = "custom_name.pkl")
 
-
-
-#-------------------------------------------#
-# Plot
-#-------------------------------------------#
-#
-# """ Slip rate evolution """
-# plt.figure('Slip rate evolution')
-#
-# plt.plot(T,Vln,'-k')
-# plt.xlabel('Time (ND)')
-# plt.ylabel('Log Slip rate (ND)')
-# plt.title(r'Slip rate evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a))
-# plt.grid()
-#
-# #plt.xlim([0, 100])
-# plt.savefig('images/modif_parameters/slip_rate_k%.2f_a%.2f.pdf' % (pnd.k, pnd.a))
-#
-# """ Phase portrait """
-# plt.figure('Phase portrait')
-#
-# sc = plt.scatter(V[1:], Vpoint, c=T[1:], cmap='viridis', marker='+')
-# plt.plot(V[1:], Vpoint, '-k', alpha=0.3)
-# plt.xlabel('Speed (ND)')
-# plt.ylabel('Acceleration (ND)')
-# plt.title(r'Phase portrait ($\kappa$=%.2f, $\alpha$=%.2f)' % (pnd.k, pnd.a))
-# plt.colorbar(sc, label='Time progression')
-# plt.grid()
-#
-# plt.savefig('images/modif_parameters/phase_portrait_k%.2f_a%.2f.pdf' % (pnd.k, pnd.a))
-#
-# plt.show()
-#
-# #plt.plot(T,np.log10(np.exp(Nu)),'-+k')
-# #plt.show()
+    # plot results
+    result=Result.load_results(f"{pnd.a}_{pnd.eta}_{pnd.k}.pkl")
+    result.slip_rate_evolution()
+    result.phase_portrait()
