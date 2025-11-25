@@ -19,11 +19,10 @@ class Result:
         self.pc=pc
 
         if filename=='':
-            if Tau is not [] and Sigma_n is not []:
-                self.filename= f"{pnd.a}_{pnd.eta}_{pnd.k}_{Sigma_n[0]}.pkl"
-
+            if Sigma_n is not None:
+                self.filename = f"{pnd.a:.2e}_{pnd.eta:.2e}_{pnd.k:.2e}_{Sigma_n[0]:.2e}.pkl"
             else:
-                self.filename= f"{pnd.a}_{pnd.eta}_{pnd.k}.pkl"
+                self.filename= f"{pnd.a:.2e}_{pnd.eta:.2e}_{pnd.k:.2e}.pkl"
         else:
             self.filename=filename
 
