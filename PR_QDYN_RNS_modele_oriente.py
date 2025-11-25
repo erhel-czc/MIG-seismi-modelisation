@@ -52,14 +52,18 @@ nu=np.log(th)
 class ParamMec:
     "Dimensional Mechanical parameters"
 
-    def __init__(self, k_rigidity, a_fric, b_fric, eta_visc, sigma_n0, dc, V_p):
-        self.k_rigidity=k_rigidity
+    def __init__(self, shear, rho_rock, lenght_fault, depth_fault, a_fric, b_fric, dc, V_p):
+        self.shear=shear
+        self.rho_rock=rho_rock
+        self.lenght_fault=lenght_fault
+        self.depth_fault=depth_fault
         self.a_fric=a_fric
-        self.b_fric=b_fric
-        self.eta_visc=eta_visc
-        self.sigma_n0=sigma_n0
+        self.b_fric=b_fric        
         self.dc=dc
         self.V_p=V_p
+        self.sigma_n0=rho_rock*9.81*depth_fault  # lithospheric stress
+        self.k_rigidity= shear/lenght_fault  # rigidity
+        self.eta_visc= np.sqrt(shear*rho_rock)/2. # viscosity
 
         
 
