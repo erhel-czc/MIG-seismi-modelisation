@@ -52,6 +52,17 @@ phi = np.log(v)
 nu = np.log(th)
 
 
+def P(t):
+    P0barre = (pd.P0/pd.sigma_n)
+    rbarre = (pd.r*pd.b_fric*pd.sigma_n) / (pd.mu*pd.dc)
+    cbarre = pd.c * (pd.b_fric**2 * pd.sigma_n**2)/(pd.V_p * pd.mu**2 * pd.dc)
+    return pd.sigma_n*P0barre * math.erfc(rbarre / 2*math.sqrt(cbarre * t))
+
+def Pdot(t):
+    P0barre = (pd.P0/pd.sigma_n)
+    rbarre = (pd.r*pd.b_fric*pd.sigma_n) / (pd.mu*pd.dc)
+    cbarre = pd.c * (pd.b_fric**2 * pd.sigma_n**2)/(pd.V_p * pd.mu**2 * pd.dc)
+    return ((pd.V_p*pd.sigma_n*P0barre) / (pd.dc*2*t*math.sqrt(np.pi))) * np.exp(-(rbarre/(2*math.sqrt(cbarre*t)))**2)
 
 def frns(phi, nu, t, pd, pnd):
     P0barre = (pd.P0/pd.sigma_n)
@@ -59,10 +70,9 @@ def frns(phi, nu, t, pd, pnd):
     cbarre = pd.c * (pd.b_fric**2 * pd.sigma_n**2)/(pd.V_p * pd.mu**2 * pd.dc)
 
     F = -pnd.k * (np.exp(phi)-1)
-    F += (np.exp(phi) - np.exp(-nu)) * (1 - P0barre*math.erfc(rbarre / 2*math.sqrt(cbarre * t)))
-    F += - (pd.f0/pd.b_fric + pnd.a*phi + nu) * (P0barre/t) * (rbarre/2*math.sqrt(np.pi*cbarre*t)) * np.exp(-(rbarre/2*math.sqrt(cbarre * t))**2)
-    F /= pnd.eta*np.exp(phi) + pnd.a*(1 - P0barre*math.erfc(rbarre / 2*math.sqrt(cbarre * t)))
-    F *= np.exp(phi)
+    F += (np.exp(phi) - np.exp(-nu)) * (1 - P(t)/pd.sigma_n)
+    F += - (pd.f0/pd.b_fric + pnd.a*phi + nu) * (pd.dc/pd.V_p*pd.sigma_n) * Pdot(t)
+    F /= pnd.eta + (pnd.a/np.exp(phi))*(1 - P(t)/pd.sigma_n)
 
     return F
 
