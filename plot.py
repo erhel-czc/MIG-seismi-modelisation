@@ -1,7 +1,9 @@
 from result import Result
 import matplotlib.pyplot as plt
 
-data = Result.load_results("0.6_1e-11_0.4.pkl") # Load previously saved results in the Results folder
+data = Result.load_results("Results/PR_QDYN_RNS_modele_oriente/0.5_100000000000000.0_30000000000.0_1.0.pkl") # Load previously saved results in the Results folder
 data.slip_rate_evolution() # Plot slip rate evolution
 data.phase_portrait() # Plot phase portrait
+data.tau_evolution() # Plot shear stress evolution
+data.sigma_evolution() # Plot normal stress evolution
 plt.show()

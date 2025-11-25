@@ -5,26 +5,34 @@ import numpy as np
 class Result:
     "Results storage"
 
-    def __init__(self, T, V, Vpoint, Nu, Phi, pd, pnd, pc, filename = ''):
+    def __init__(self, T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc, filename = ''):
         self.T=T
         self.V=V
         self.Vpoint=Vpoint
         self.Nu=Nu
         self.Phi=Phi
+        self.Phipoint=Phipoint
+        self.Tau=Tau
+        self.Sigma_n=Sigma_n
         self.pd=pd
         self.pnd=pnd
         self.pc=pc
+
         if filename=='':
-            self.filename= f"{pnd.a}_{pnd.eta}_{pnd.k}.pkl"
+            if Tau is not [] and Sigma_n is not []:
+                self.filename= f"{pnd.a}_{pnd.eta}_{pnd.k}_{Sigma_n[0]}.pkl"
+
+            else:
+                self.filename= f"{pnd.a}_{pnd.eta}_{pnd.k}.pkl"
         else:
             self.filename=filename
 
-    def save_results(self):
-        with open(f"Results/{self.filename}", 'wb') as f:
+    def save_results(self, folder_name=''):
+        with open(f"Results/{folder_name}/{self.filename}", 'wb') as f:
             pickle.dump(self, f)
 
     @staticmethod
-    def load_results(filename):
+    def load_results(path=''):
         """
         Load previously saved results from a pickle file.
 
@@ -65,7 +73,7 @@ class Result:
                     # ignore and continue with other classes.
                     pass
 
-        with open(f"Results/{filename}", 'rb') as f:
+        with open(path, 'rb') as f:
             data = pickle.load(f)
 
         return data
@@ -117,3 +125,47 @@ class Result:
 
         if save:
             plt.savefig(f'{path}/phase_portrait_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
+
+    def tau_evolution(self, save=False, path=''):
+        """
+        Plot the tangent stress evolution.
+
+        Parameters
+        ----------
+        save : bool
+            If True, save the figure in the given path.
+        path : str
+            The path where the figure will be saved.
+        """
+        plt.figure('Shear stress evolution')
+
+        plt.plot(self.T, self.Tau, '-k')
+        plt.xlabel('Time (ND)')
+        plt.ylabel('Shear stress (ND)')
+        plt.title(r'Shear stress evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
+        plt.grid()
+
+        if save:
+            plt.savefig(f'{path}/shear_stress_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
+
+    def sigma_evolution(self, save=False, path=''):
+        """
+        Plot the normal stress evolution.
+
+        Parameters
+        ----------
+        save : bool
+            If True, save the figure in the given path.
+        path : str
+            The path where the figure will be saved.
+        """
+        plt.figure('Normal stress evolution')
+
+        plt.plot(self.T, self.Sigma_n, '-k')
+        plt.xlabel('Time (ND)')
+        plt.ylabel('Normal stress (ND)')
+        plt.title(r'Normal stress evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
+        plt.grid()
+
+        if save:
+            plt.savefig(f'{path}/normal_stress_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')

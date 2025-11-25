@@ -1,6 +1,53 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import pickle
+from result import Result
+
+#####################################
+# Parameters
+#####################################
+
+#-------------------------------------#
+# Dimensional Mechanical parameter definition
+#-------------------------------------#
+k_rigidity=3.0E7 # rigidity (Pa)
+a_fric=0.005      # direct effect coefficient
+b_fric=0.01       # evolution effect coefficient
+eta_visc=1.0E6   # viscosity (Pa.s)
+sigma_n0=1.0E8    # normal stress (Pa)
+dc=1.0E-4           # critical slip distance (m)
+V_p=1.0E-9        # tectonic speed (m/s)
+
+#-------------------------------------#
+# ND Mechanical parameter definition
+#-------------------------------------#
+a=0.6
+eta=1.0E-11
+k=0.41
+
+#-------------------------------------------#
+# Computational parameter definition
+#-------------------------------------------#
+tol=1.0E-10   # error tolerance
+nitrkmax=30
+nitmax=10000  # maximum number of iterations
+hmin=1.0E-12  # minimum time step
+hmax=1.0E10   # maximum time step
+safe=0.8      # safety factor for RKF iterations
+
+#-------------------------------------------#
+# Initial conditions (ND variables)
+#-------------------------------------------#
+v=0.1       # initial normalized slip rate
+th=1/v      # initial normalized state variable
+sigma_n=1.0  # initial normal stress (ND)
+
+t=0.0       # initial time
+h=0.001     # initial time step
+
+psi=0.7
+f0=0.6
+
+phi=np.log(v)
+nu=np.log(th)
 
 class ParamMec:
     "Dimensional Mechanical parameters"
@@ -38,62 +85,6 @@ class ParamComp:
         self.hmax=hmax # maximum time step (CFL for diffusion equation)
         self.safe=safe
 
-class Result:
-    "Results storage"
-
-    def __init__(self, T, V, Vpoint, Nu, Phi, pd, pnd, pc, filename = ''):
-        self.T=T
-        self.V=V
-        self.Vpoint=Vpoint
-        self.Nu=Nu
-        self.Phi=Phi
-        self.pd=pd
-        self.pnd=pnd
-        self.pc=pc
-        if filename=='':
-            self.filename= f"{pnd.a}_{pnd.eta}_{pnd.k}.pkl"
-        else:
-            self.filename=filename
-
-    def save_results(self):
-        with open(f"Results/{self.filename}", 'wb') as f:
-            pickle.dump(self, f)
-        f.close()
-
-    @staticmethod
-    def load_results(filename):
-        with open(f"Results/{filename}", 'rb') as f:
-            data = pickle.load(f)
-        f.close()
-        return data
-
-    def slip_rate_evolution(self):
-        plt.figure('Slip rate evolution')
-
-        plt.plot(self.T, np.log(self.V), '-k')
-        plt.xlabel('Time (ND)')
-        plt.ylabel('Log Slip rate (ND)')
-        plt.title(r'Slip rate evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
-        plt.grid()
-
-        # plt.xlim([0, 100])
-        #plt.savefig('images/modif_parameters/slip_rate_k%.2f_a%.2f.pdf' % (self.pnd.k, self.pnd.a))
-
-    def phase_portrait(self):
-        plt.figure('Phase portrait')
-
-        sc = plt.scatter(self.V[1:], self.Vpoint, c=self.T[1:], cmap='viridis', marker='+')
-        plt.plot(self.V[1:], self.Vpoint, '-k', alpha=0.3)
-        plt.xlabel('Speed (ND)')
-        plt.ylabel('Acceleration (ND)')
-        plt.title(r'Phase portrait ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
-        plt.colorbar(sc, label='Time progression')
-        plt.grid()
-
-        #plt.savefig('images/modif_parameters/phase_portrait_k%.2f_a%.2f.pdf' % (self.pnd.k, self.pnd.a))
-
-        plt.show()
-
 
 
 
@@ -101,47 +92,25 @@ class Result:
 # Dimensional Mechanical parameter definition
 #-------------------------------------#
 
-pd = ParamMec(k_rigidity=3.0E7, # rigidity (Pa)
-              a_fric=0.005,     # direct effect coefficient
-              b_fric=0.01,      # evolution effect coefficient
-              eta_visc=1.0E6,  # viscosity (Pa.s)
-              sigma_n0=1.0E8,   # normal stress (Pa)
-              dc=1.0E-4,          # critical slip distance (m)
-              V_p=1.0E-9)       # tectonic speed (m/s)
+pd = ParamMec(k_rigidity=k_rigidity, a_fric=a_fric, b_fric=b_fric, eta_visc=eta_visc, sigma_n0=sigma_n0, dc=dc, V_p=V_p)
 
 #-------------------------------------#
 # ND Mechanical parameter definition
 #-------------------------------------#
-#pnd=NdParamMec(a=0.5, eta=1.0E-8, k=0.4, psi=1.0, f0=0.6, b=pd.b_fric)
 
-pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n0*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n0), psi=0.7, f0=0.6, b=pd.b_fric)
+pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n0*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n0), psi=psi, f0=f0, b=pd.b_fric)
 
-#-------------------------------------------#
-# Computational parameter definition
-#-------------------------------------------#
-pc=ParamComp(tol=1.0E-10,
-             nitrkmax=30,
-             nitmax=10000,
-             hmin=1.0E-12,
-             hmax=1.0E10,
-             safe=0.8)
-
-#-------------------------------------------#
-# Initial conditions (ND variables)
-#-------------------------------------------#
-v=0.1       # initial normalized slip rate
-th=1/v      # initial normalized state variable
-sigma_n=1.0  # initial normal stress (ND)
 f=pnd.f0 + pnd.a*pnd.b*np.log(v) + pnd.b*np.log(th)  # initial frictional resistance (ND)
 
 cpsi=np.cos(pnd.psi)
 spsi=np.sin(pnd.psi)
-t=0.0       # initial time
-h=0.001     # initial time step
+
+#-------------------------------------------#
+# Computational parameter definition
+#-------------------------------------------#
+pc = ParamComp(tol, nitrkmax, nitmax, hmin, hmax, safe)
 
 
-phi=np.log(v)
-nu=np.log(th)
 
 def f_rns(phi, nu, pnd):
 
@@ -296,7 +265,7 @@ def rkf(phi,nu, sigma_n, f, h, pnd, pc):
 # Iterations
 #-------------------------------------------#
 
-if __name__ == "__main__": #to allow import without running the simulation
+if __name__ == "__main__": # to allow import without running the simulation
     T=np.array([t])
     Phi=np.array([phi])
     Nu=np.array([nu])
@@ -327,18 +296,9 @@ if __name__ == "__main__": #to allow import without running the simulation
     V=np.exp(Phi)
     Dt=np.diff(T)
     Phipoint=Dphi/Dt
-    #Vpoint=V[1:]*Phipoint
-    #Vpointln=np.log(Vpoint)
+    Vpoint=V[1:]*Phipoint
+
 
     # save results
-#    Result(T, V, Vpoint, Nu, Phi, pd, pnd, pc).save_results() #add filename if needed (filename = "custom_name.pkl")
-
-    # plot results
-    #result=Result.load_results(f"{pnd.a}_{pnd.eta}_{pnd.k}.pkl")
-    #result.slip_rate_evolution()
-    #result.phase_portrait()
-
-    plt.plot(T, Phi, '-k')
-    #plt.plot(T, Tau, '-k')
-    #plt.plot(T, Sigma_n, '-k')
-    plt.show()
+    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc) # add filename if needed (filename = "custom_name.pkl")
+    r.save_results('PR_QDYN_RNS_modele_oriente')
