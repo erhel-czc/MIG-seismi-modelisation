@@ -139,7 +139,94 @@ Titre
 \end_layout
 
 \begin_layout Standard
-Texte
+qsdfqdf
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-1"
+
+\end_inset
+
+ Segall,
+ P.,
+ & Lu,
+ S.
+ (2015).
+ Injection-induced seismicity :
+ Poroelastic and earthquake nucleation effects.
+ Journal of Geophysical Research:
+ Solid Earth,
+ 120(7),
+ 5082\SpecialChar nobreakdash
+5103.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+target "https://doi.org/10.1002/2015JB012060"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-2"
+literal "false"
+
+\end_inset
+
+ Nkomom,
+ T.
+ N.,
+ Okaly,
+ J.
+ B.,
+ & Mvogo,
+ A.
+ (2025).
+ Earthquake waves in a modified Burridge and Knopoff model.
+ The European Physical Journal Plus,
+ 140(5),
+ 464.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+target "https://doi.org/10.1140/epjp/s13360-025-06315-y"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-3"
+
+\end_inset
+
+ THOMAS,
+ M.
+ Y.,
+ & BHAT,
+ H.
+ S.
+ (2023).
+ Chapitre 4—
+Lois de friction et modélisation numérique du cycle sismique.
+ ISTE Group.
+ 
+\begin_inset CommandInset href
+LatexCommand href
+target "https://books.google.fr/books?id=dmBDEQAAQBAJ"
+
+\end_inset
+
+
 \end_layout
 
 \end_body
