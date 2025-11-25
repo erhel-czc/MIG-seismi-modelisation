@@ -64,7 +64,7 @@ class Result:
         f.close()
         return data
 
-    def slip_rate_evolution(self):
+    def slip_rate_evolution(self, save=False, path=''):
         plt.figure('Slip rate evolution')
 
         plt.plot(self.T, np.log(self.V), '-k')
@@ -75,8 +75,10 @@ class Result:
 
         # plt.xlim([0, 100])
         #plt.savefig('images/modif_parameters/slip_rate_k%.2f_a%.2f.pdf' % (self.pnd.k, self.pnd.a))
+        if save:
+            plt.savefig(f'{path}/slip_rate_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
 
-    def phase_portrait(self):
+    def phase_portrait(self, save=False, path=''):
         plt.figure('Phase portrait')
 
         sc = plt.scatter(self.V[1:], self.Vpoint, c=self.T[1:], cmap='viridis', marker='+')
@@ -87,12 +89,8 @@ class Result:
         plt.colorbar(sc, label='Time progression')
         plt.grid()
 
-        #plt.savefig('images/modif_parameters/phase_portrait_k%.2f_a%.2f.pdf' % (self.pnd.k, self.pnd.a))
-
-        plt.show()
-
-
-
+        if save:
+            plt.savefig(f'{path}/phase_portrait_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
 
 #-------------------------------------#
 # Dimensional Mechanical parameter definition
@@ -288,9 +286,4 @@ if __name__ == "__main__": #to allow import without running the simulation
     Vpointln=np.log(Vpoint)
 
     # save results
-    Result(T, V, Vpoint, Nu, Phi, pd, pnd, pc).save_results() #add filename if needed (filename = "custom_name.pkl")
-
-    # plot results
-    result=Result.load_results(f"{pnd.a}_{pnd.eta}_{pnd.k}.pkl")
-    result.slip_rate_evolution()
-    result.phase_portrait()
+    Result(T, V, Vpoint, Nu, Phi, pd, pnd, pc).save_results() # add filename if needed (filename = "custom_name.pkl")
