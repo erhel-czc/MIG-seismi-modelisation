@@ -37,7 +37,7 @@ safe=0.8      # safety factor for RKF iterations
 #-------------------------------------------#
 # Initial conditions (ND variables)
 #-------------------------------------------#
-v=0.1       # initial normalized slip rate
+v=2       # initial normalized slip rate
 th=1/v      # initial normalized state variable
 sigma_n=1.0  # initial normal stress (ND)
 
@@ -121,7 +121,7 @@ def f_rns(phi, nu, pnd):
 
     return pnd.f0 + pnd.a*pnd.b*phi + pnd.b*nu
 
-def phi_rns(phi, nu, sigma_n, f, pnd):
+def phi_rns(phi, nu, sigma_n, pnd):
 
     F=pnd.k*(1 - spsi*np.exp(phi))*(spsi + cpsi*f_rns(phi, nu, pnd)) + sigma_n*(np.exp(phi)-np.exp(-nu))
     F=F/(pnd.a*sigma_n + pnd.eta*np.exp(phi))
@@ -184,66 +184,54 @@ def rkf(phi,nu, sigma_n, f, h, pnd, pc):
         # the 4th order RK estimate.
             
         
-        k1 = h * phi_rns(phi,nu,sigma_n,f,pnd)
+        k1 = h * phi_rns(phi,nu,sigma_n,pnd)
         l1 = h * th_rns(phi,nu)
         m1 = h * sigma_rns(phi,pnd)
-        n1 = h * f_rns(phi,nu,pnd)
 
 
         dphi = c21*k1
         dnu = c21*l1
         dsigma = c21*m1
-        df = c21*n1
         
-        k2 = h * phi_rns(phi+dphi,nu+dnu,sigma_n+dsigma,f+df,pnd)
+        k2 = h * phi_rns(phi+dphi,nu+dnu,sigma_n+dsigma,pnd)
         l2 = h * th_rns(phi+dphi,nu+dnu)
         m2 = h * sigma_rns(phi+dphi,pnd)
-        n2 = h * f_rns(phi+dphi,nu+dnu,pnd)
 
         dphi = c31*k1 + c32*k2
         dnu = c31*l1 + c32*l2
         dsigma = c31*m1 + c32*m2
-        df = c31*n1 + c32*n2
 
-        k3 = h * phi_rns(phi+dphi,nu+dnu,sigma_n+dsigma,f+df,pnd)
+        k3 = h * phi_rns(phi+dphi,nu+dnu,sigma_n+dsigma,pnd)
         l3 = h * th_rns(phi+dphi,nu+dnu)
         m3 = h * sigma_rns(phi+dphi,pnd)
-        n3 = h * f_rns(phi+dphi,nu+dnu,pnd)
 
         dphi = c41*k1 + c42*k2 + c43*k3
         dnu = c41*l1 + c42*l2 + c43*l3
         dsigma = c41*m1 + c42*m2 + c43*m3
-        df = c41*n1 + c42*n2 + c43*n3
 
-        k4 = h * phi_rns(phi+dphi,nu+dnu,sigma_n+dsigma,f+df,pnd)
+        k4 = h * phi_rns(phi+dphi,nu+dnu,sigma_n+dsigma,pnd)
         l4 = h * th_rns(phi+dphi,nu+dnu)
         m4 = h * sigma_rns(phi+dphi,pnd)
-        n4 = h * f_rns(phi+dphi,nu+dnu,pnd)
 
         dphi = c51*k1 + c52*k2 + c53*k3 + c54*k4
         dnu = c51*l1 + c52*l2 + c53*l3 + c54*l4
         dsigma = c51*m1 + c52*m2 + c53*m3 + c54*m4
-        df = c51*n1 + c52*n2 + c53*n3 + c54*n4
 
-        k5 = h * phi_rns(phi+dphi,nu+dnu,sigma_n+dsigma,f+df,pnd)
+        k5 = h * phi_rns(phi+dphi,nu+dnu,sigma_n+dsigma,pnd)
         l5 = h * th_rns(phi+dphi,nu+dnu)
         m5 = h * sigma_rns(phi+dphi,pnd)
-        n5 = h * f_rns(phi+dphi,nu+dnu,pnd)
 
         dphi = c61*k1 + c62*k2 + c63*k3 + c64*k4 + c65*k5
         dnu = c61*l1 + c62*l2 + c63*l3 + c64*l4 + c65*l5
         dsigma = c61*m1 + c62*m2 + c63*m3 + c64*m4 + c65*m5
-        df = c61*n1 + c62*n2 + c63*n3 + c64*n4 + c65*n5
 
-        k6 = h * phi_rns(phi+dphi,nu+dnu,sigma_n+dsigma,f+df,pnd)
+        k6 = h * phi_rns(phi+dphi,nu+dnu,sigma_n+dsigma,pnd)
         l6 = h * th_rns(phi+dphi,nu+dnu)
         m6 = h * sigma_rns(phi+dphi,pnd)
-        n6 = h * f_rns(phi+dphi,nu+dnu,pnd)
-
 
         
         # Error estimation
-        err=r1*np.array([k1, l1, m1, n1])+r3*np.array([k3, l3, m3, n3])+r4*np.array([k4, l4, m4, n4])+r5*np.array([k5, l5, m5, n5])+r6*np.array([k6, l6, m6, n6])
+        err=r1*np.array([k1, l1, m1])+r3*np.array([k3, l3, m3])+r4*np.array([k4, l4, m4])+r5*np.array([k5, l5, m5])+r6*np.array([k6, l6, m6])
         errmax=np.max(abs(err))
 
         if errmax <= pc.tol and errmax>=0:
@@ -252,7 +240,6 @@ def rkf(phi,nu, sigma_n, f, h, pnd, pc):
             phi=phi+c1 * k1 + c3 * k3 + c4 * k4 + c5 * k5 +c6 * k6
             nu=nu+c1 * l1 + c3 * l3 + c4 * l4 + c5 * l5 + c6*l6
             sigma_n=sigma_n+c1 * m1 + c3 * m3 + c4 * m4 + c5 * m5 + c6*m6
-            f=f+c1 * n1 + c3 * n3 + c4 * n4 + c5 * n5 + c6*n6
             
             
             if errmax>0:
@@ -264,7 +251,7 @@ def rkf(phi,nu, sigma_n, f, h, pnd, pc):
 
    
 
-    return phi, nu, sigma_n, f, dphi, dnu, dsigma, df, h # type: ignore
+    return phi, nu, sigma_n, dphi, dnu, dsigma, h # type: ignore
 
 #-------------------------------------------#
 # Iterations
@@ -282,7 +269,7 @@ if __name__ == "__main__": # to allow import without running the simulation
 
     for iter in range(0,pc.nitmax,1):
         #--update phi, nu and h
-        phi, nu, sigma_n, f, dphi, dnu, dsigma, df, h = rkf(phi, nu, sigma_n, f, h, pnd, pc)
+        phi, nu, sigma_n, dphi, dnu, dsigma, h = rkf(phi, nu, sigma_n, f, h, pnd, pc)
 
         #--update time
         t+=h
@@ -292,7 +279,7 @@ if __name__ == "__main__": # to allow import without running the simulation
         Phi=np.append(Phi,[phi])
         Nu=np.append(Nu,[nu])
         Sigma_n=np.append(Sigma_n,[sigma_n])
-        F=np.append(F,[f])
+        F=np.append(F,[f_rns(phi,nu,pnd)])
         Tau = np.append(Tau, [f*sigma_n])
         Dphi=np.append(Dphi,[dphi])
         Dnu=np.append(Dnu,[dnu])
@@ -302,6 +289,7 @@ if __name__ == "__main__": # to allow import without running the simulation
     Dt=np.diff(T)
     Phipoint=Dphi/Dt
     Vpoint=V[1:]*Phipoint
+    
 
 
     # save results
