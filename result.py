@@ -83,7 +83,7 @@ class Result:
         """
         plt.figure('Slip rate evolution')
 
-        plt.plot(self.T, np.log(self.V), '-k')
+        plt.plot(self.T, self.Phi, '-k')
         plt.xlabel('Time (ND)')
         plt.ylabel('Log Slip rate (ND)')
         plt.title(r'Slip rate evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
