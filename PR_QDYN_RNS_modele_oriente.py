@@ -8,10 +8,10 @@ from result import Result
 #-------------------------------------#
 # Dimensional Mechanical parameter definition
 #-------------------------------------#
-shear
-rho_roc
-lenght_fault
-depth_fault
+shear=1.0E11    # shear modulus (Pa)
+rho_roc=2700.0  # rock density (kg/m3)
+lenght_fault=1.0E3  # fault lenght (m)
+depth_fault=3.0E3   # fault depth (m)
 a_fric=0.005      # direct effect coefficient
 b_fric=0.01       # evolution effect coefficient
 dc=1.0E-4           # critical slip distance (m)
@@ -97,7 +97,7 @@ class ParamComp:
 # Dimensional Mechanical parameter definition
 #-------------------------------------#
 
-pd = ParamMec(shear=shear, rho_rock=rho_rock, lenght_fault=lenght_fault, depth_fault=depth_fault, a_fric=a_fric, b_fric=b_fric, dc=dc, V_p=V_p)
+pd = ParamMec(shear=shear, rho_rock=rho_roc, lenght_fault=lenght_fault, depth_fault=depth_fault, a_fric=a_fric, b_fric=b_fric, dc=dc, V_p=V_p)
 
 #-------------------------------------#
 # ND Mechanical parameter definition
