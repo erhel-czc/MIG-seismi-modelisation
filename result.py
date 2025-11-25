@@ -138,9 +138,9 @@ class Result:
         """
         plt.figure('Shear stress evolution')
 
-        plt.plot(self.T, self.Tau, '-k')
-        plt.xlabel('Time (ND)')
-        plt.ylabel('Shear stress (ND)')
+        plt.plot(self.T*self.pd.dc/self.pd.V_p, self.Tau*self.pd.sigma_n0, '-k')
+        plt.xlabel('Time (s)')
+        plt.ylabel('Shear stress (Pa)')
         plt.title(r'Shear stress evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
         plt.grid()
 
@@ -160,9 +160,9 @@ class Result:
         """
         plt.figure('Normal stress evolution')
 
-        plt.plot(self.T, self.Sigma_n, '-k')
-        plt.xlabel('Time (ND)')
-        plt.ylabel('Normal stress (ND)')
+        plt.plot(self.T*self.pd.dc/self.pd.V_p, self.pd.sigma_n0*self.Sigma_n, '-k')
+        plt.xlabel('Time (s)')
+        plt.ylabel('Normal stress (Pa)')
         plt.title(r'Normal stress evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
         plt.grid()
 

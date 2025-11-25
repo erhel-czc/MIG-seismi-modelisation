@@ -16,3 +16,4 @@ _Objectif : modéliser la sismicité induite par injection de fluide en géother
 - conception d'un modèle orienté en traitant le problème avec une pente incliné et un ressort horizontal.
 - modifications du module de gestion des résultats pour gérer les nouveaux paramètres du modèle orienté
 - ajout d'un module de calcul de magnitude
+- Objectif : retrouver la loi Mw = f(L), après avoir créer un programme de 'lancementé' permettant d'enregistrer des centaines de séismes aléatoires (ou pas).
