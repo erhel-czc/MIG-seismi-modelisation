@@ -17,15 +17,15 @@ pd = ParamMec(k_rigidity=3.0E10,  # rigidity (Pa)
               sigma_n=50.0E6,  # normal stress (Pa)
               dc=0.01,  # critical slip distance (m)
               V_p=1.0E-6, # tectonic speed (m/s)
-              f0 = 1.0,
+              f0 = 20e9,
               r = 1.0,
-              c = 1.0,
+              c = 6.8e-2,
               P0 = 25.0e5)
 
 # -------------------------------------#
 # ND Mechanical parameter definition
 # -------------------------------------#
-pnd = NdParamMec(a=0.6, eta=1.0E-11, k=0.4)
+pnd = NdParamMec(a=0.3, eta=1.0E-11, k=0.4)
 
 # pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n))
 
