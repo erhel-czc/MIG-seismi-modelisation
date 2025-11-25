@@ -49,7 +49,8 @@ Or, on a:
 \end{equation}
 
 \begin{equation} 
-\frac{d_c}{v_p b \sigma}\frac{dP}{dt} =\frac{1}{b}\frac{1}{2\sqrt{\pi}}\frac{\bar{P_{\infty}}}{\bar{t}}e^{-\left(\frac{\bar{r}}{2\sqrt{\bar{c}\bar{t}}}\right)^2}
+\frac{d_c}{v_p b \sigma}\frac{dP}{dt} =\frac{1}{b}\frac{1}{2\sqrt{\pi}}\frac{\bar{P_{\infty}}}{\bar{t}}\frac{\bar{r}}{\sqrt{\bar{c}\bar{t}}}
+e^{-\left(\frac{\bar{r}}{2\sqrt{\bar{c}\bar{t}}}\right)^2}
 \end{equation}
 Les variables adimensionnées étant:
 $$
@@ -58,11 +59,12 @@ $$
 \bar{P_{\infty}}=\frac{P_{\infty}}{\sigma}
 $$
 
+
 \begin{equation}
 \fbox{\[
 \displaystyle \frac{-\kappa(\bar{v} - 1)
   +(\bar{v}
-  - \frac{1}{\bar{\theta}})(1-\bar{P_{\infty}}\operatorname{erfc}(\frac{\bar{r}}{2\sqrt{\bar{c}\bar{t}}}))-\left(\frac{f_0}{b}+\alpha\ln{\bar{(v)}}+\ln{\bar{(\theta)}}\right)\frac{\bar{P_{\infty}}}{\bar{t}}e^{-\left(\frac{\bar{r}}{2\sqrt{\bar{c}\bar{t}}}\right)^2}}{\bar{\eta}\bar{v}+\alpha(1-\bar{P_{\infty}}\operatorname{erfc}(\frac{\bar{r}}{2\sqrt{\bar{c}\bar{t}}}))}d\bar{t} = \frac{d\bar{v}}{\bar{v}} \]} 
+  - \frac{1}{\bar{\theta}})(1-\bar{P_{\infty}}\operatorname{erfc}(\frac{\bar{r}}{2\sqrt{\bar{c}\bar{t}}}))-\left(\frac{f_0}{b}+\alpha\ln{\bar{(v)}}+\ln{\bar{(\theta)}}\right)\frac{\bar{P_{\infty}}}{\bar{t}}\frac{\bar{r}}{\sqrt{\bar{c}\bar{t}}}e^{-\left(\frac{\bar{r}}{2\sqrt{\bar{c}\bar{t}}}\right)^2}}{\bar{\eta}\bar{v}+\alpha(1-\bar{P_{\infty}}\operatorname{erfc}(\frac{\bar{r}}{2\sqrt{\bar{c}\bar{t}}}))}d\bar{t} = \frac{d\bar{v}}{\bar{v}} \]} 
 \end{equation}
 
 \end{document}
