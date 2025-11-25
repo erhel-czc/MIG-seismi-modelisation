@@ -15,3 +15,4 @@ _Objectif : modéliser la sismicité induite par injection de fluide en géother
 - création d'un module `result.py` pour stocker les résultats des simulations (classe `Result`) avec fonctions de sauvegarde et de chargement via pickle. Module utilisable par l'ensemble des simulations (PR_QDYN_RNS, avec pression, et inclinée)
 - conception d'un modèle orienté en traitant le problème avec une pente incliné et un ressort horizontal.
 - modifications du module de gestion des résultats pour gérer les nouveaux paramètres du modèle orienté
+- ajout d'un module de calcul de magnitude
