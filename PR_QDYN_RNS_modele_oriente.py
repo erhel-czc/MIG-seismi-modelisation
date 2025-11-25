@@ -8,11 +8,12 @@ from result import Result
 #-------------------------------------#
 # Dimensional Mechanical parameter definition
 #-------------------------------------#
-k_rigidity=3.0E7 # rigidity (Pa)
+shear
+rho_roc
+lenght_fault
+depth_fault
 a_fric=0.005      # direct effect coefficient
 b_fric=0.01       # evolution effect coefficient
-eta_visc=1.0E6   # viscosity (Pa.s)
-sigma_n0=1.0E8    # normal stress (Pa)
 dc=1.0E-4           # critical slip distance (m)
 V_p=1.0E-9        # tectonic speed (m/s)
 
@@ -96,7 +97,7 @@ class ParamComp:
 # Dimensional Mechanical parameter definition
 #-------------------------------------#
 
-pd = ParamMec(k_rigidity=k_rigidity, a_fric=a_fric, b_fric=b_fric, eta_visc=eta_visc, sigma_n0=sigma_n0, dc=dc, V_p=V_p)
+pd = ParamMec(shear=shear, rho_rock=rho_rock, lenght_fault=lenght_fault, depth_fault=depth_fault, a_fric=a_fric, b_fric=b_fric, dc=dc, V_p=V_p)
 
 #-------------------------------------#
 # ND Mechanical parameter definition
