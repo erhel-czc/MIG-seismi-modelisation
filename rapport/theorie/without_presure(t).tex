@@ -47,7 +47,7 @@ $$
   - \frac{v_p b \sigma}{d_c} \frac{1}{\bar{\theta}} \frac{d\bar{\theta}}{d\bar{t}}
 \end{equation}
 
-On multiplie par $\frac{v_p b \sigma}{d_c}$ :
+On multiplie par $\frac{d_c}{v_p b \sigma}$ :
 
 \begin{equation}
 \frac{\eta v_p}{b \sigma} \frac{d_c}{{v_p}^2} \frac{dv}{dt}
@@ -66,16 +66,16 @@ On multiplie par $\frac{v_p b \sigma}{d_c}$ :
 \]
 \end{center}
 
-Comme $\frac{d \bar{v}}{d \bar{t}}=\frac{d_c}{{v_p}^2}\frac{dv}}{dt}}$ et en posant $\bar{\eta}=\frac{\eta v_p}{b \sigma}$, on obtient:
+Comme $\frac{d \bar{v}}{d \bar{t}}=\frac{d_c}{{v_p}^2}\frac{dv}{dt}$ et en posant $\bar{\eta}=\frac{\eta v_p}{b \sigma}$, on obtient:
 
 \begin{equation}
-\bar{\eta}\frac{d \bar{v}}{d \bar{t}}
+\bar{\eta}\frac{d \bar{v}}{d \bar{t}} 
 = -\kappa(\bar{v} - 1)
   - \alpha \frac{1}{\bar{v}} \frac{d\bar{v}}{d\bar{t}}
-  - \frac{1}{\bar{\theta}}} \frac{d\bar{\theta}}{d\bar{t}}
+  - \frac{1}{\bar{\theta}} \frac{d\bar{\theta}}{d\bar{t}}
 \end{equation}
 
-Or $\frac{d\bar{\theta}}{d\bar{t}}=\frac{d\theta}{dt}}=1-\frac{v \theta}{d_c}=1-\bar{v} \bar{\theta}$ on a finalement :
+Or $\frac{d\bar{\theta}}{d\bar{t}}=\frac{d\theta}{dt}=1-\frac{v\theta}{d_c}=1-\bar{v} \bar{\theta}$ on a finalement :
 
 \begin{equation}
 \frac{d \bar{v}}{d \bar{t}}(\bar{\eta}+\frac{\alpha}{\bar{v}})
@@ -86,14 +86,10 @@ Or $\frac{d\bar{\theta}}{d\bar{t}}=\frac{d\theta}{dt}}=1-\frac{v \theta}{d_c}=1-
 On en déduit la formule utilisée dans le programme Python :
 
 \begin{equation}
-\fbox{$\[
-\frac{ -\kappa(\bar{v} - 1)
+\fbox{\[
+\displaystyle \frac{-\kappa(\bar{v} - 1)
   +\bar{v}
-  - \frac{1}{\bar{\theta}} }{ \bar{\eta}+\frac{\alpha}{\bar{v}}}
-\]
+  - \frac{1}{\bar{\theta}}}{\alpha+\bar{\eta}\bar{v}}d\bar{t} = \frac{d\bar{v}}{\bar{v}} \]} 
 \end{equation}
-
-
-
 
 \end{document}
