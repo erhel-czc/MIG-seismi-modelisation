@@ -2,6 +2,49 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pickle
 
+#####################################
+# Parameters
+#####################################
+
+#-------------------------------------#
+# Dimensional Mechanical parameter definition
+#-------------------------------------#
+k_rigidity=3.0E10 # rigidity (Pa)
+a_fric=0.005      # direct effect coefficient
+b_fric=0.01       # evolution effect coefficient
+eta_visc=1.0E18   # viscosity (Pa.s)
+sigma_n=50.0E6    # normal stress (Pa)
+dc=0.01           # critical slip distance (m)
+V_p=1.0E-6        # tectonic speed (m/s)
+
+#-------------------------------------#
+# ND Mechanical parameter definition
+#-------------------------------------#
+a=0.6
+eta=1.0E-11
+k=0.41
+
+#-------------------------------------------#
+# Computational parameter definition
+#-------------------------------------------#
+tol=1.0E-10   # error tolerance
+nitrkmax=30
+nitmax=10000  # maximum number of iterations
+hmin=1.0E-12  # minimum time step
+hmax=1.0E10   # maximum time step
+safe=0.8      # safety factor for RKF iterations
+
+#-------------------------------------------#
+# Initial conditions (ND variables)
+#-------------------------------------------#
+v=0.1       # initial normalized slip rate
+th=1/v      # initial normalized state variable
+t=0.0       # initial time
+h=0.001     # initial time step
+
+phi=np.log(v)
+nu=np.log(th)
+
 class ParamMec:
     "Dimensional Mechanical parameters"
 
@@ -95,42 +138,20 @@ class Result:
 #-------------------------------------#
 # Dimensional Mechanical parameter definition
 #-------------------------------------#
-
-pd = ParamMec(k_rigidity=3.0E10, # rigidity (Pa)
-              a_fric=0.005,     # direct effect coefficient
-              b_fric=0.01,      # evolution effect coefficient
-              eta_visc=1.0E18,  # viscosity (Pa.s)
-              sigma_n=50.0E6,   # normal stress (Pa)
-              dc=0.01,          # critical slip distance (m)
-              V_p=1.0E-6)       # tectonic speed (m/s)
+pd = ParamMec(k_rigidity, a_fric, b_fric, eta_visc, sigma_n, dc, V_p)
 
 #-------------------------------------#
 # ND Mechanical parameter definition
 #-------------------------------------#
-pnd=NdParamMec(a=0.6, eta=1.0E-11, k=0.4)
+pnd = NdParamMec(a, eta, k)
+
 
 #pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n))
 
 #-------------------------------------------#
 # Computational parameter definition
 #-------------------------------------------#
-pc=ParamComp(tol=1.0E-10,
-             nitrkmax=30,
-             nitmax=10000,
-             hmin=1.0E-12,
-             hmax=1.0E10,
-             safe=0.8)
-
-#-------------------------------------------#
-# Initial conditions (ND variables)
-#-------------------------------------------#
-v=0.1       # initial normalized slip rate
-th=1/v      # initial normalized state variable
-t=0.0       # initial time
-h=0.001     # initial time step
-
-phi=np.log(v)
-nu=np.log(th)
+pc = ParamComp(tol, nitrkmax, nitmax, hmin, hmax, safe)
 
 def frns(phi,nu,pnd):
 
