@@ -1,6 +1,5 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import pickle
+from result import Result
 
 #####################################
 # Parameters
@@ -78,82 +77,6 @@ class ParamComp:
         self.hmax=hmax # maximum time step (CFL for diffusion equation)
         self.safe=safe
 
-class Result:
-    "Results storage"
-
-    def __init__(self, T, V, Vpoint, Nu, Phi, pd, pnd, pc, filename = ''):
-        self.T=T
-        self.V=V
-        self.Vpoint=Vpoint
-        self.Nu=Nu
-        self.Phi=Phi
-        self.pd=pd
-        self.pnd=pnd
-        self.pc=pc
-        if filename=='':
-            self.filename= f"{pnd.a}_{pnd.eta}_{pnd.k}.pkl"
-        else:
-            self.filename=filename
-
-    def save_results(self):
-        with open(f"Results/{self.filename}", 'wb') as f:
-            pickle.dump(self, f)
-        f.close()
-
-    @staticmethod
-    def load_results(filename):
-        with open(f"Results/{filename}", 'rb') as f:
-            data = pickle.load(f)
-        f.close()
-        return data
-
-    def slip_rate_evolution(self, save=False, path=''):
-        """
-        Plot the slip rate evolution of the speed.
-
-        Parameters
-        ----------
-        save : bool
-            If True, save the figure in the given path.
-        path : str
-            The path where the figure will be saved.
-        """
-        plt.figure('Slip rate evolution')
-
-        plt.plot(self.T, np.log(self.V), '-k')
-        plt.xlabel('Time (ND)')
-        plt.ylabel('Log Slip rate (ND)')
-        plt.title(r'Slip rate evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
-        plt.grid()
-
-        # plt.xlim([0, 100])
-        #plt.savefig('images/modif_parameters/slip_rate_k%.2f_a%.2f.pdf' % (self.pnd.k, self.pnd.a))
-        if save:
-            plt.savefig(f'{path}/slip_rate_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
-
-    def phase_portrait(self, save=False, path=''):
-        """
-        Plot the phase portrait of the speed.
-
-        Parameters
-        ----------
-        save : bool
-            If True, save the figure in the given path.
-        path : str
-            The path where the figure will be saved.
-        """
-        plt.figure('Phase portrait')
-
-        sc = plt.scatter(self.V[1:], self.Vpoint, c=self.T[1:], cmap='viridis', marker='+')
-        plt.plot(self.V[1:], self.Vpoint, '-k', alpha=0.3)
-        plt.xlabel('Speed (ND)')
-        plt.ylabel('Acceleration (ND)')
-        plt.title(r'Phase portrait ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
-        plt.colorbar(sc, label='Time progression')
-        plt.grid()
-
-        if save:
-            plt.savefig(f'{path}/phase_portrait_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
 
 #-------------------------------------#
 # Dimensional Mechanical parameter definition
