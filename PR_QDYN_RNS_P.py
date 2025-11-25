@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 import pickle
 from PR_QDYN_RNS import Result, ParamMec, NdParamMec, ParamComp
 
@@ -45,21 +46,28 @@ h = 0.001  # initial time step
 phi = np.log(v)
 nu = np.log(th)
 
+def P(t,pd):
+    return pd.P0 * math.erfc(0.5 * pd.r * math.sqrt(pd.c * t * pd.dc / pd.V_p))
 
-def frns(phi, nu, pnd):
-    F = -pnd.k * (np.exp(phi) - 1) + np.exp(phi) - np.exp(-nu)
-    F = F / (pnd.a + pnd.eta * np.exp(phi))
+
+def Pdot(t,pd):
+    return -(0.5 * pd.P0 * pd.r * math.sqrt(pd.c * pd.V_p / np.pi * pd.dc * t)) * np.exp(- (pd.c * pd.dc * t * pd.r**2) / (4 * pd.V_p))
+
+def frns(phi, nu, t, pd, pnd):
+    F = -pnd.k * (np.exp(phi)-1)
+    F += (np.exp(phi) - np.exp(-nu)) * (1 - P(t, pd)/pd.sigma_n)
+    F += (pd.f0/pd.b_fric + pnd.a*phi + nu) * Pdot(t,pd)
+    F /= pnd.eta * np.exp(phi) + pnd.a*(1 - P(t, pd)/pd.sigma_n)
 
     return F
 
 
 def grns(phi, nu):
-    F = np.exp(-nu) - np.exp(phi)
+    G = 1/np.exp(nu) - np.exp(phi)
+    return G
 
-    return F
 
-
-def rkf(phi, nu, h, pnd, pc):
+def rkf(phi, nu, t, h, pnd, pc):
     c21 = 1 / 4
     c31 = 3 / 32
     c32 = 9 / 32
@@ -97,37 +105,37 @@ def rkf(phi, nu, h, pnd, pc):
         # Compute values needed to compute truncation error estimate and
         # the 4th order RK estimate.
 
-        k1 = h * frns(phi, nu, pnd)
+        k1 = h * frns(phi, nu, t, pd, pnd)
         l1 = h * grns(phi, nu)
 
         dphi = c21 * k1
         dnu = c21 * l1
 
-        k2 = h * frns(phi + dphi, nu + dnu, pnd)
+        k2 = h * frns(phi + dphi, nu + dnu, t, pd, pnd)
         l2 = h * grns(phi + dphi, nu + dnu)
 
         dphi = c31 * k1 + c32 * k2
         dnu = c31 * l1 + c32 * l2
 
-        k3 = h * frns(phi + dphi, nu + dnu, pnd)
+        k3 = h * frns(phi + dphi, nu + dnu, t, pd, pnd)
         l3 = h * grns(phi + dphi, nu + dnu)
 
         dphi = c41 * k1 + c42 * k2 + c43 * k3
         dnu = c41 * l1 + c42 * l2 + c43 * l3
 
-        k4 = h * frns(phi + dphi, nu + dnu, pnd)
+        k4 = h * frns(phi + dphi, nu + dnu, t, pd, pnd)
         l4 = h * grns(phi + dphi, nu + dnu)
 
         dphi = c51 * k1 + c52 * k2 + c53 * k3 + c54 * k4
         dnu = c51 * l1 + c52 * l2 + c53 * l3 + c54 * l4
 
-        k5 = h * frns(phi + dphi, nu + dnu, pnd)
+        k5 = h * frns(phi + dphi, nu + dnu, t, pd, pnd)
         l5 = h * grns(phi + dphi, nu + dnu)
 
         dphi = c61 * k1 + c62 * k2 + c63 * k3 + c64 * k4 + c65 * k5
         dnu = c61 * l1 + c62 * l2 + c63 * l3 + c64 * l4 + c65 * l5
 
-        k6 = h * frns(phi + dphi, nu + dnu, pnd)
+        k6 = h * frns(phi + dphi, nu + dnu, t, pd, pnd)
         l6 = h * grns(phi + dphi, nu + dnu)
 
         # Error estimation
@@ -163,7 +171,7 @@ if __name__ == "__main__":  # to allow import without running the simulation
 
     for iter in range(0, pc.nitmax, 1):
         # --update phi, nu and h
-        phi, nu, dphi, dnu, h = rkf(phi, nu, h, pnd, pc)
+        phi, nu, dphi, dnu, h = rkf(phi, nu, h, t, pnd, pc)
 
         # --update time
         t += h
@@ -183,4 +191,4 @@ if __name__ == "__main__":  # to allow import without running the simulation
     Vpointln = np.log(Vpoint)
 
     # save results
-    Result(T, V, Vpoint, Nu, Phi, pd, pnd, pc).save_results()  # add filename if needed (filename = "custom_name.pkl")
+    Result(T, V, Vpoint, Nu, Phi, pd, pnd, pc, filename="testPression").save_results()  # add filename if needed (filename = "custom_name.pkl")
