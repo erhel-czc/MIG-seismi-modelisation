@@ -5,14 +5,18 @@ import pickle
 class ParamMec:
     "Dimensional Mechanical parameters"
 
-    def __init__(self, k_rigidity, a_fric, b_fric, eta_visc, sigma_n0, dc, V_p):
-        self.k_rigidity=k_rigidity
+    def __init__(self, shear, rho_rock, lenght_fault, depth_fault, a_fric, b_fric, dc, V_p):
+        self.shear=shear
+        self.rho_rock=rho_rock
+        self.lenght_fault=lenght_fault
+        self.depth_fault=depth_fault
         self.a_fric=a_fric
-        self.b_fric=b_fric
-        self.eta_visc=eta_visc
-        self.sigma_n0=sigma_n0
+        self.b_fric=b_fric        
         self.dc=dc
         self.V_p=V_p
+        self.sigma_n0=rho_rock*9.81*depth_fault  # lithospheric stress
+        self.k_rigidity= shear/lenght_fault  # rigidity
+        self.eta_visc= np.sqrt(shear*rho_rock)/2. # viscosity
 
         
 
@@ -101,11 +105,12 @@ class Result:
 # Dimensional Mechanical parameter definition
 #-------------------------------------#
 
-pd = ParamMec(k_rigidity=3.0E7, # rigidity (Pa)
+pd = ParamMec(shear=1.0E11, # shear (Pa)
+              rho_rock=2700,  # rock density (kg/m3)
+              lenght_fault=1.0E3,  # fault length (m)
+              depth_fault=3.0E3,  # fault depth (m)
               a_fric=0.005,     # direct effect coefficient
               b_fric=0.01,      # evolution effect coefficient
-              eta_visc=1.0E6,  # viscosity (Pa.s)
-              sigma_n0=1.0E8,   # normal stress (Pa)
               dc=1.0E-4,          # critical slip distance (m)
               V_p=1.0E-9)       # tectonic speed (m/s)
 
@@ -114,7 +119,7 @@ pd = ParamMec(k_rigidity=3.0E7, # rigidity (Pa)
 #-------------------------------------#
 #pnd=NdParamMec(a=0.5, eta=1.0E-8, k=0.4, psi=1.0, f0=0.6, b=pd.b_fric)
 
-pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n0*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n0), psi=0.7, f0=0.6, b=pd.b_fric)
+pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n0*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n0), psi=0.8, f0=0.6, b=pd.b_fric)
 
 #-------------------------------------------#
 # Computational parameter definition
@@ -341,4 +346,5 @@ if __name__ == "__main__": #to allow import without running the simulation
     plt.plot(T, Phi, '-k')
     #plt.plot(T, Tau, '-k')
     #plt.plot(T, Sigma_n, '-k')
+    #plt.plot(Phi, Tau, '-k')
     plt.show()
