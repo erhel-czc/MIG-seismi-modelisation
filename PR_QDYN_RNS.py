@@ -108,6 +108,16 @@ class Result:
         return data
 
     def slip_rate_evolution(self, save=False, path=''):
+        """
+        Plot the slip rate evolution of the speed.
+
+        Parameters
+        ----------
+        save : bool
+            If True, save the figure in the given path.
+        path : str
+            The path where the figure will be saved.
+        """
         plt.figure('Slip rate evolution')
 
         plt.plot(self.T, np.log(self.V), '-k')
@@ -122,6 +132,16 @@ class Result:
             plt.savefig(f'{path}/slip_rate_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
 
     def phase_portrait(self, save=False, path=''):
+        """
+        Plot the phase portrait of the speed.
+
+        Parameters
+        ----------
+        save : bool
+            If True, save the figure in the given path.
+        path : str
+            The path where the figure will be saved.
+        """
         plt.figure('Phase portrait')
 
         sc = plt.scatter(self.V[1:], self.Vpoint, c=self.T[1:], cmap='viridis', marker='+')
