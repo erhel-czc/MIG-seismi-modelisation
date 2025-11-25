@@ -5,7 +5,7 @@ import pickle
 class ParamMec:
     "Dimensional Mechanical parameters"
 
-    def __init__(self, k_rigidity, a_fric, b_fric, eta_visc, sigma_n, dc, V_p, f0 = 1.0, r = 1.0, c = 1.0, P0 = 25.0e5):
+    def __init__(self, k_rigidity, a_fric, b_fric, eta_visc, sigma_n, dc, V_p, f0 = 1.0, r = 1.0, c = 1.0, P0 = 1.0, mu = 1.0):
         self.k_rigidity=k_rigidity
         self.a_fric=a_fric
         self.b_fric=b_fric
@@ -17,6 +17,7 @@ class ParamMec:
         self.r=r
         self.c=c
         self.P0=P0
+        self.mu = mu
 
 class NdParamMec:
     "Non dimensional Mechanical parameters"
@@ -81,8 +82,8 @@ class Result:
     def phase_portrait(self):
         plt.figure('Phase portrait')
 
-        sc = plt.scatter(self.V[1:], self.Vpoint, c=self.T[1:], cmap='viridis', marker='+')
-        plt.plot(self.V[1:], self.Vpoint, '-k', alpha=0.3)
+        sc = plt.scatter(np.log(self.V[1:]), self.Vpoint, c=self.T[1:], cmap='viridis', marker='+')
+        plt.plot(np.log(self.V[1:]), self.Vpoint, '-k', alpha=0.3)
         plt.xlabel('Speed (ND)')
         plt.ylabel('Acceleration (ND)')
         plt.title(r'Phase portrait ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))

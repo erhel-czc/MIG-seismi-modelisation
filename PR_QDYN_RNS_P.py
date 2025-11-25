@@ -15,17 +15,18 @@ pd = ParamMec(k_rigidity=3.0E10,  # rigidity (Pa)
               b_fric=0.01,  # evolution effect coefficient
               eta_visc=1.0E18,  # viscosity (Pa.s)
               sigma_n=50.0E6,  # normal stress (Pa)
-              dc=0.01,  # critical slip distance (m)
-              V_p=1.0E-6, # tectonic speed (m/s)
-              f0 = 20e9,
-              r = 1.0,
+              dc= 1e-4,  # critical slip distance (m)
+              V_p=1.0e-9, # tectonic speed (m/s)
+              f0 = 0.6,
+              r = 1.0e1,
               c = 6.8e-2,
-              P0 = 25.0e5)
+              P0 = 25e5,
+              mu = 20e9)
 
 # -------------------------------------#
 # ND Mechanical parameter definition
 # -------------------------------------#
-pnd = NdParamMec(a=0.3, eta=1.0E-11, k=0.4)
+pnd = NdParamMec(a=1.3, eta=1.0E-11, k=0.4)
 
 # pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n))
 
@@ -44,24 +45,24 @@ pc = ParamComp(tol=1.0E-10,
 # -------------------------------------------#
 v = 0.1  # initial normalized slip rate
 th = 1 / v  # initial normalized state variable
-t = 0.0  # initial time
+t = 0.0001  # initial time
 h = 0.001  # initial time step
 
 phi = np.log(v)
 nu = np.log(th)
 
-def P(t,pd):
-    return pd.P0 * math.erfc(0.5 * pd.r * math.sqrt(pd.c * t * pd.dc / pd.V_p))
 
-
-def Pdot(t,pd):
-    return -(0.5 * pd.P0 * pd.r * math.sqrt(pd.c * pd.V_p / np.pi * pd.dc * t)) * np.exp(- (pd.c * pd.dc * t * pd.r**2) / (4 * pd.V_p))
 
 def frns(phi, nu, t, pd, pnd):
+    P0barre = (pd.P0/pd.sigma_n)
+    rbarre = (pd.r*pd.b_fric*pd.sigma_n) / (pd.mu*pd.dc)
+    cbarre = pd.c * (pd.b_fric**2 * pd.sigma_n**2)/(pd.V_p * pd.mu**2 * pd.dc)
+
     F = -pnd.k * (np.exp(phi)-1)
-    F += (np.exp(phi) - np.exp(-nu)) * (1 - P(t, pd)/pd.sigma_n)
-    F += (pd.f0/pd.b_fric + pnd.a*phi + nu) * Pdot(t,pd)
-    F /= pnd.eta * np.exp(phi) + pnd.a*(1 - P(t, pd)/pd.sigma_n)
+    F += (np.exp(phi) - np.exp(-nu)) * (1 - P0barre*math.erfc(rbarre / 2*math.sqrt(cbarre * t)))
+    F += - (pd.f0/pd.b_fric + pnd.a*phi + nu) * (P0barre/t) * (rbarre/2*math.sqrt(np.pi*cbarre*t)) * np.exp(-(rbarre/2*math.sqrt(cbarre * t))**2)
+    F /= pnd.eta*np.exp(phi) + pnd.a*(1 - P0barre*math.erfc(rbarre / 2*math.sqrt(cbarre * t)))
+    F *= np.exp(phi)
 
     return F
 
@@ -168,6 +169,7 @@ def rkf(phi, nu, t, h, pnd, pc):
 
 if __name__ == "__main__":  # to allow import without running the simulation
     T = np.array([t])
+    Dt = np.array([])
     Phi = np.array([phi])
     Nu = np.array([nu])
     Dphi = np.array([])
@@ -182,6 +184,7 @@ if __name__ == "__main__":  # to allow import without running the simulation
 
         # --store results
         T = np.append(T, [t])
+        Dt = np.append(Dt, [h])
         Phi = np.append(Phi, [phi])
         Nu = np.append(Nu, [nu])
         Dphi = np.append(Dphi, [dphi])
@@ -189,7 +192,6 @@ if __name__ == "__main__":  # to allow import without running the simulation
 
     V = np.exp(Phi)
     Vln = np.log(V)
-    Dt = np.diff(T)
     Phipoint = Dphi / Dt
     Vpoint = V[1:] * Phipoint
     #Vpointln = np.log(Vpoint)
