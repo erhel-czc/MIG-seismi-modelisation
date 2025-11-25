@@ -16,7 +16,11 @@ pd = ParamMec(k_rigidity=3.0E10,  # rigidity (Pa)
               eta_visc=1.0E18,  # viscosity (Pa.s)
               sigma_n=50.0E6,  # normal stress (Pa)
               dc=0.01,  # critical slip distance (m)
-              V_p=1.0E-6)  # tectonic speed (m/s)
+              V_p=1.0E-6, # tectonic speed (m/s)
+              f0 = 1.0,
+              r = 1.0,
+              c = 1.0,
+              P0 = 25.0e5)
 
 # -------------------------------------#
 # ND Mechanical parameter definition
@@ -171,7 +175,7 @@ if __name__ == "__main__":  # to allow import without running the simulation
 
     for iter in range(0, pc.nitmax, 1):
         # --update phi, nu and h
-        phi, nu, dphi, dnu, h = rkf(phi, nu, h, t, pnd, pc)
+        phi, nu, dphi, dnu, h = rkf(phi, nu, t, h, pnd, pc)
 
         # --update time
         t += h
@@ -188,7 +192,7 @@ if __name__ == "__main__":  # to allow import without running the simulation
     Dt = np.diff(T)
     Phipoint = Dphi / Dt
     Vpoint = V[1:] * Phipoint
-    Vpointln = np.log(Vpoint)
+    #Vpointln = np.log(Vpoint)
 
     # save results
-    Result(T, V, Vpoint, Nu, Phi, pd, pnd, pc, filename="testPression").save_results()  # add filename if needed (filename = "custom_name.pkl")
+    Result(T, V, Vpoint, Nu, Phi, pd, pnd, pc, filename="testPression.pkl").save_results()  # add filename if needed (filename = "custom_name.pkl")
