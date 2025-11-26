@@ -254,4 +254,4 @@ if __name__ == "__main__": #to allow import without running the simulation
 
     # save results
     r = Result(T, V, Vpoint, Nu, Phi, Phipoint, pd=pd, pnd=pnd, pc=pc, Tau=None, Sigma_n=None) # add filename if needed (filename = "custom_name.pkl")
-    r.save_results('PR_QDYN_RNS') # add filename if needed (filename = "custom_name.pkl")
+    r.save_results('PR_QDYN_RNS') # add folder name if needed (filename = "folder")

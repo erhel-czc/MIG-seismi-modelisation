@@ -2,7 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 import pickle
-from PR_QDYN_RNS import Result, ParamMec, NdParamMec, ParamComp
+from PR_QDYN_RNS import ParamMec, NdParamMec, ParamComp
+from result import Result
 
 
 
@@ -71,7 +72,7 @@ def frns(phi, nu, t, pd, pnd):
 
     F = -pnd.k * (np.exp(phi)-1)
     F += (np.exp(phi) - np.exp(-nu)) * (1 - P(t)/pd.sigma_n)
-    F += - (pd.f0/pd.b_fric + pnd.a*phi + nu) * (pd.dc/(pd.V_p*pd.sigma_n)) * Pdot(t)
+    F += (pd.f0/pd.b_fric + pnd.a*phi + nu) * (pd.dc/(pd.V_p*pd.sigma_n)) * Pdot(t)
     F /= pnd.eta + (pnd.a/np.exp(phi))*(1 - P(t)/pd.sigma_n)
 
     return F
@@ -207,4 +208,5 @@ if __name__ == "__main__":  # to allow import without running the simulation
     #Vpointln = np.log(Vpoint)
 
     # save results
-    Result(T, V, Vpoint, Nu, Phi, pd, pnd, pc, filename="testPressionv2.pkl").save_results()  # add filename if needed (filename = "custom_name.pkl")
+    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, pd=pd, pnd=pnd, pc=pc, Tau=None, Sigma_n=None, filename = 'pressure1')  # add filename if needed (filename = "custom_name.pkl")
+    r.save_results('PR_QDYN_RNS_P')  # add folder name if needed (foldername = "folder".pkl")
