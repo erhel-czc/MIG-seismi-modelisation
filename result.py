@@ -5,7 +5,7 @@ import numpy as np
 class Result:
     "Results storage"
 
-    def __init__(self, T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc, filename = ''):
+    def __init__(self, T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc, P=None, filename = ''):
         self.T=T
         self.V=V
         self.Vpoint=Vpoint
@@ -17,6 +17,7 @@ class Result:
         self.pd=pd
         self.pnd=pnd
         self.pc=pc
+        self.P = P
 
         if filename=='':
             if Sigma_n is not None:
@@ -223,3 +224,19 @@ class Result:
 
         if save:
             plt.savefig(f'{path}/normal_stress_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
+
+    def pressure_evolution(self, save=False, path='', name=''):
+
+        plt.figure('Pressure evolution')
+
+        plt.plot(self.T, self.P, '-k')
+        plt.xlabel('Time (s)')
+        plt.ylabel('Pressure (Pa)')
+        plt.title(r'Pressurestress evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
+        plt.grid()
+
+        if save:
+            if name == '':
+                plt.savefig(f'{path}/pressure_evol_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
+            else:
+                plt.savefig(f'{path}/pressure_evol_{name}.pdf')
