@@ -206,7 +206,8 @@ if __name__ == "__main__":  # to allow import without running the simulation
     Phipoint = Dphi / Dt
     Vpoint = V[1:] * Phipoint
     #Vpointln = np.log(Vpoint)
+    Pvalues = np.array([P(t) for t in T])
 
     # save results
-    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, pd=pd, pnd=pnd, pc=pc, Tau=None, Sigma_n=None, filename = 'pressure1')  # add filename if needed (filename = "custom_name.pkl")
+    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, pd=pd, pnd=pnd, pc=pc, P=Pvalues, Tau=None, Sigma_n=None, filename = 'pressure1')  # add filename if needed (filename = "custom_name.pkl")
     r.save_results('PR_QDYN_RNS_P')  # add folder name if needed (foldername = "folder".pkl")

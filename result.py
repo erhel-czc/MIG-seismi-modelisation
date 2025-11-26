@@ -232,7 +232,7 @@ class Result:
         plt.plot(self.T, self.P, '-k')
         plt.xlabel('Time (s)')
         plt.ylabel('Pressure (Pa)')
-        plt.title(r'Pressurestress evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
+        plt.title(r'Pressure evolution')
         plt.grid()
 
         if save:
