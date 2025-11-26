@@ -28,7 +28,10 @@ def dP_linear(t, pd, pnd):
 # Constant pressure
 
 def P_constant(t, pd, pnd):
-    return pd.P0
+    if t<=2:
+        return 0.0
+    else:
+        return pd.Pinf
 
 def dP_constant(t, pd, pnd):
     return 0.0

@@ -197,7 +197,7 @@ class Result:
         path : str
             The path where the figure will be saved.
         """
-        plt.figure('Shear stress evolution')
+        plt.figure('Tau stress evolution')
 
         plt.plot(self.T*self.pd.dc/self.pd.V_p, self.Tau*self.pd.sigma_n0, '-k')
         plt.xlabel('Time (s)')
@@ -230,7 +230,7 @@ class Result:
         if save:
             plt.savefig(f'{path}/normal_stress_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
         
-    def theta_evolution(self, save=False, path=''):
+    def theta_evolution(self, save=False, path='', name=''):
             """
             Plot the theta evolution.
 
@@ -241,7 +241,7 @@ class Result:
             path : str
                 The path where the figure will be saved.
             """
-            plt.figure('Normal stress evolution')
+            plt.figure('Log Theta evolution')
 
             plt.plot(self.T, self.Nu, '-k')
             plt.xlabel('Time (ND)')
@@ -250,13 +250,16 @@ class Result:
             plt.grid()
 
             if save:
-                plt.savefig(f'{path}/normal_stress_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
+                if name == '':
+                    plt.savefig(f'{path}/normal_stress_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
+                else:
+                    plt.savefig(f'{path}/theta_evol_{name}.pdf')
 
     def pressure_evolution(self, save=False, path='', name=''):
 
         plt.figure('Pressure evolution')
 
-        plt.plot(self.T, self.P, '-k') # type: ignore
+        plt.plot(self.T*self.pd.dc/self.pd.V_p, self.P, '-k') # type: ignore
         plt.xlabel('Time (s)')
         plt.ylabel('Pressure (Pa)')
         plt.title(r'Pressure evolution')
