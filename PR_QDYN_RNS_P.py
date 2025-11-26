@@ -18,7 +18,7 @@ pd = ParamMec(k_rigidity=3.0E10,  # rigidity (Pa)
               dc= 1e-4,  # critical slip distance (m)
               V_p=1.0e-9, # tectonic speed (m/s)
               f0 = 0.6,
-              r = 1.0e1,
+              r = 1.0e3,
               c = 6.8e-2,
               P0 = 25e5,
               mu = 20e9)
@@ -62,7 +62,7 @@ def Pdot(t):
     P0barre = (pd.P0/pd.sigma_n)
     rbarre = (pd.r*pd.b_fric*pd.sigma_n) / (pd.mu*pd.dc)
     cbarre = pd.c * (pd.b_fric**2 * pd.sigma_n**2)/(pd.V_p * pd.mu**2 * pd.dc)
-    return ((pd.V_p*pd.sigma_n*P0barre) / (pd.dc*2*t*math.sqrt(np.pi))) * np.exp(-(rbarre/(2*math.sqrt(cbarre*t)))**2)
+    return ((pd.V_p*pd.sigma_n*P0barre) / (pd.dc*2*t*math.sqrt(np.pi))) * (rbarre / math.sqrt(cbarre*t)) * np.exp(-(rbarre/(2*math.sqrt(cbarre*t)))**2)
 
 def frns(phi, nu, t, pd, pnd):
     P0barre = (pd.P0/pd.sigma_n)
@@ -71,7 +71,7 @@ def frns(phi, nu, t, pd, pnd):
 
     F = -pnd.k * (np.exp(phi)-1)
     F += (np.exp(phi) - np.exp(-nu)) * (1 - P(t)/pd.sigma_n)
-    F += - (pd.f0/pd.b_fric + pnd.a*phi + nu) * (pd.dc/pd.V_p*pd.sigma_n) * Pdot(t)
+    F += - (pd.f0/pd.b_fric + pnd.a*phi + nu) * (pd.dc/(pd.V_p*pd.sigma_n)) * Pdot(t)
     F /= pnd.eta + (pnd.a/np.exp(phi))*(1 - P(t)/pd.sigma_n)
 
     return F
@@ -207,4 +207,4 @@ if __name__ == "__main__":  # to allow import without running the simulation
     #Vpointln = np.log(Vpoint)
 
     # save results
-    Result(T, V, Vpoint, Nu, Phi, pd, pnd, pc, filename="testPression.pkl").save_results()  # add filename if needed (filename = "custom_name.pkl")
+    Result(T, V, Vpoint, Nu, Phi, pd, pnd, pc, filename="testPressionv2.pkl").save_results()  # add filename if needed (filename = "custom_name.pkl")
