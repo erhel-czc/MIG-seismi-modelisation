@@ -16,7 +16,7 @@ pd = ParamMec(k_rigidity=3.0E10,  # rigidity (Pa)
               a_fric=0.005,  # direct effect coefficient
               b_fric=0.01,  # evolution effect coefficient
               eta_visc=1.0E18,  # viscosity (Pa.s)
-              sigma_n=50.0E5,  # normal stress (Pa)
+              sigma_n=50.0E6,  # normal stress (Pa)
               dc= 1e-4,  # critical slip distance (m)
               V_p=1.0e-9, # tectonic speed (m/s)
               f0 = 0.6,
@@ -28,7 +28,7 @@ pd = ParamMec(k_rigidity=3.0E10,  # rigidity (Pa)
 # -------------------------------------#
 # ND Mechanical parameter definition
 # -------------------------------------#
-pnd = NdParamMec(a=1.7, eta=1.0E-11, k=0.4)
+pnd = NdParamMec(a=0.5, eta=1.0E-11, k=0.4)
 
 # pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n))
 
@@ -92,20 +92,16 @@ P = pressions_dict[choix]["P"]
 Pdot = pressions_dict[choix]["dP"]
 
 def frns(phi, nu, t, pd, pnd):
-    P0barre = (pd.P0/pd.sigma_n)
-    rbarre = (pd.r*pd.b_fric*pd.sigma_n) / (pd.mu*pd.dc)
-    cbarre = pd.c * (pd.b_fric**2 * pd.sigma_n**2)/(pd.V_p * pd.mu**2 * pd.dc)
-
     F = -pnd.k * (np.exp(phi)-1)
     F += (np.exp(phi) - np.exp(-nu)) * (1 - P(t,pd,pnd)/pd.sigma_n)
     F += (pd.f0/pd.b_fric + pnd.a*phi + nu) * (pd.dc/(pd.V_p*pd.sigma_n)) * Pdot(t,pd,pnd)
-    F /= pnd.eta + (pnd.a/np.exp(phi))*(1 - P(t,pd,pnd)/pd.sigma_n)
+    F /= pnd.eta*np.exp(phi) + pnd.a*(1 - P(t,pd,pnd)/pd.sigma_n)
 
     return F
 
 
 def grns(phi, nu):
-    G = 1/np.exp(nu) - np.exp(phi)
+    G = np.exp(-nu) - np.exp(phi)
     return G
 
 
