@@ -4,6 +4,7 @@ import math
 import pickle
 from PR_QDYN_RNS import ParamMec, NdParamMec, ParamComp
 from result import Result
+import pressure_expressions
 
 
 
@@ -53,17 +54,42 @@ phi = np.log(v)
 nu = np.log(th)
 
 
-def P(t):
-    P0barre = (pd.P0/pd.sigma_n)
-    rbarre = (pd.r*pd.b_fric*pd.sigma_n) / (pd.mu*pd.dc)
-    cbarre = pd.c * (pd.b_fric**2 * pd.sigma_n**2)/(pd.V_p * pd.mu**2 * pd.dc)
-    return pd.sigma_n*P0barre * math.erfc(rbarre / (2*math.sqrt(cbarre * t)))
 
-def Pdot(t):
-    P0barre = (pd.P0/pd.sigma_n)
-    rbarre = (pd.r*pd.b_fric*pd.sigma_n) / (pd.mu*pd.dc)
-    cbarre = pd.c * (pd.b_fric**2 * pd.sigma_n**2)/(pd.V_p * pd.mu**2 * pd.dc)
-    return ((pd.V_p*pd.sigma_n*P0barre) / (pd.dc*2*t*math.sqrt(np.pi))) * (rbarre / math.sqrt(cbarre*t)) * np.exp(-(rbarre/(2*math.sqrt(cbarre*t)))**2)
+# Building the dictionary of pressure models
+
+pressions_dict = {}
+
+for name in dir(pressure_expressions):
+    if name.startswith("P") and not name.startswith("dP"):
+
+        # extract model name
+        if "_" in name:
+            model = name.split("_", 1)[1]  # ex : P_linear -> linear
+        else:
+            model = ""
+
+        P_func = getattr(pressure_expressions, name)
+
+        # associated derivative name
+        dP_name = "d" + name  # ex : P_linear -> dP_linear
+
+        if hasattr(pressure_expressions, dP_name):
+            dP_func = getattr(pressure_expressions, dP_name)
+            pressions_dict[model] = {"P": P_func, "dP": dP_func}
+        else:
+            raise ValueError(f"Error : derivative function '{dP_name}' doesn't exist for model '{name}'. ")
+
+
+# user choice
+
+print("Modèles de pression disponibles :", list(pressions_dict.keys()))
+choix = input("Votre choix (laisser vide pour modèle principal) : ")
+
+if choix not in pressions_dict:
+    raise ValueError(f"Modèle inconnu : {choix}")
+
+P = pressions_dict[choix]["P"]
+Pdot = pressions_dict[choix]["dP"]
 
 def frns(phi, nu, t, pd, pnd):
     P0barre = (pd.P0/pd.sigma_n)
@@ -71,9 +97,9 @@ def frns(phi, nu, t, pd, pnd):
     cbarre = pd.c * (pd.b_fric**2 * pd.sigma_n**2)/(pd.V_p * pd.mu**2 * pd.dc)
 
     F = -pnd.k * (np.exp(phi)-1)
-    F += (np.exp(phi) - np.exp(-nu)) * (1 - P(t)/pd.sigma_n)
-    F += (pd.f0/pd.b_fric + pnd.a*phi + nu) * (pd.dc/(pd.V_p*pd.sigma_n)) * Pdot(t)
-    F /= pnd.eta + (pnd.a/np.exp(phi))*(1 - P(t)/pd.sigma_n)
+    F += (np.exp(phi) - np.exp(-nu)) * (1 - P(t,pd,pnd)/pd.sigma_n)
+    F += (pd.f0/pd.b_fric + pnd.a*phi + nu) * (pd.dc/(pd.V_p*pd.sigma_n)) * Pdot(t,pd,pnd)
+    F /= pnd.eta + (pnd.a/np.exp(phi))*(1 - P(t,pd,pnd)/pd.sigma_n)
 
     return F
 
@@ -206,8 +232,9 @@ if __name__ == "__main__":  # to allow import without running the simulation
     Phipoint = Dphi / Dt
     Vpoint = V[1:] * Phipoint
     #Vpointln = np.log(Vpoint)
-    Pvalues = np.array([P(t) for t in T])
+    Pvalues = np.array([P(t,pd,pnd) for t in T])
 
     # save results
-    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, pd=pd, pnd=pnd, pc=pc, P=Pvalues, Tau=None, Sigma_n=None, filename = 'pressure1')  # add filename if needed (filename = "custom_name.pkl")
+    default_filename = f"{choix}_{pd.P0:.2e}_{pnd.a:.2e}_{pnd.eta:.2e}_{pnd.k:.2e}.pkl"
+    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, pd=pd, pnd=pnd, pc=pc, P=Pvalues, Tau=None, Sigma_n=None, filename = default_filename)  # add filename if needed (filename = "custom_name.pkl")
     r.save_results('PR_QDYN_RNS_P')  # add folder name if needed (foldername = "folder".pkl")
