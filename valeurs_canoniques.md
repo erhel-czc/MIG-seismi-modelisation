@@ -1,3 +1,6 @@
+# Valeurs de référence des paramètres dimensionnels utilisés dans les simulations
+
+```python
 shear=1.0E11    # shear modulus (Pa) 
 rho_roc=2700.0  # rock density (kg/m3)
 lenght_fault=1.0E3  # fault lenght (m)
@@ -20,3 +23,4 @@ h=0.001     # initial time step
 
 psi=0.7
 f0=0.6
+```
