@@ -47,7 +47,7 @@ nu=np.log(th)
 class ParamMec:
     "Dimensional Mechanical parameters"
 
-    def __init__(self, k_rigidity, a_fric, b_fric, eta_visc, sigma_n, dc, V_p):
+    def __init__(self, k_rigidity, a_fric, b_fric, eta_visc, sigma_n, dc, V_p, f0 = 1.0, r = 1.0, c = 1.0, P0 = 1.0, mu = 1.0):
         self.k_rigidity=k_rigidity
         self.a_fric=a_fric
         self.b_fric=b_fric
@@ -55,8 +55,11 @@ class ParamMec:
         self.sigma_n=sigma_n
         self.dc=dc
         self.V_p=V_p
-
-        
+        self.f0=f0
+        self.r=r
+        self.c=c
+        self.P0=P0
+        self.mu = mu
 
 class NdParamMec:
     "Non dimensional Mechanical parameters"
@@ -251,4 +254,4 @@ if __name__ == "__main__": #to allow import without running the simulation
 
     # save results
     r = Result(T, V, Vpoint, Nu, Phi, Phipoint, pd=pd, pnd=pnd, pc=pc, Tau=None, Sigma_n=None) # add filename if needed (filename = "custom_name.pkl")
-    r.save_results('PR_QDYN_RNS') # add filename if needed (filename = "custom_name.pkl")
+    r.save_results('PR_QDYN_RNS') # add folder name if needed (filename = "folder")
