@@ -21,3 +21,4 @@ _Objectif : modéliser la sismicité induite par injection de fluide en géother
 
 ## Jour 3
 - tracé de la magnitude Mw en fonction de la longueur de la faille L
+- mise en place d'un module de détection de cycles sysmiques
