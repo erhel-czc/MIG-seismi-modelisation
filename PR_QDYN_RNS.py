@@ -19,8 +19,8 @@ V_p=1.0E-9        # tectonic speed (m/s)
 #-------------------------------------#
 # ND Mechanical parameter definition
 #-------------------------------------#
-a=1.3
-eta=1.0E-11
+a=0.5
+eta=1.0E-8
 k=0.4
 
 #-------------------------------------------#
@@ -253,5 +253,5 @@ if __name__ == "__main__": #to allow import without running the simulation
     #Vpointln=np.log(Vpoint)
 
     # save results
-    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, pd=pd, pnd=pnd, pc=pc, Tau=None, Sigma_n=None) # add filename if needed (filename = "custom_name.pkl")
-    r.save_results('PR_QDYN_RNS') # add folder name if needed (filename = "folder")
+    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, pd=pd, pnd=pnd, pc=pc, Tau=None, Sigma_n=None, filename = "zizi.pkl") # add filename if needed (filename = "custom_name.pkl")
+    r.save_results('Pipi') # add folder name if needed (filename = "folder")

@@ -16,7 +16,7 @@ pd = ParamMec(k_rigidity=3.0E10,  # rigidity (Pa)
               a_fric=0.005,  # direct effect coefficient
               b_fric=0.01,  # evolution effect coefficient
               eta_visc=1.0E18,  # viscosity (Pa.s)
-              sigma_n=50.0E6,  # normal stress (Pa)
+              sigma_n=50.0E5,  # normal stress (Pa)
               dc= 1e-4,  # critical slip distance (m)
               V_p=1.0e-9, # tectonic speed (m/s)
               f0 = 0.6,
@@ -28,7 +28,7 @@ pd = ParamMec(k_rigidity=3.0E10,  # rigidity (Pa)
 # -------------------------------------#
 # ND Mechanical parameter definition
 # -------------------------------------#
-pnd = NdParamMec(a=0.5, eta=1.0E-11, k=0.4)
+pnd = NdParamMec(a=0.5, eta=1.0E-8, k=0.4)
 
 # pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n))
 
