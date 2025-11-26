@@ -18,28 +18,27 @@ def dP_article(t,pd,pnd):
 # Linear pressure expression
 
 def P_linear(t, pd, pnd):
-    P0barre = (pd.P0/pd.sigma_n)
-    rbarre = (pd.r*pd.b_fric*pd.sigma_n) / (pd.mu*pd.dc)
-    cbarre = pd.c * (pd.b_fric**2 * pd.sigma_n**2)/(pd.V_p * pd.mu**2 * pd.dc)
     if t>=1e4:
-        return P0barre
+        return pd.P0
     else :
-        return (P0barre/1e4)*t
+        return (pd.P0/1e4)*t
 
 def dP_linear(t, pd, pnd):
-    P0barre = (pd.P0/pd.sigma_n)
-    rbarre = (pd.r*pd.b_fric*pd.sigma_n) / (pd.mu*pd.dc)
-    cbarre = pd.c * (pd.b_fric**2 * pd.sigma_n**2)/(pd.V_p * pd.mu**2 * pd.dc)
     if t>=1e4:
         return 0.0
     else :
-        return P0barre/1e4
+        return pd.P0/1e4
 
 # Constant pressure
 
 def P_constant(t, pd, pnd):
-    P0barre = (pd.P0/pd.sigma_n)
-    return P0barre
+    return pd.P0
 
 def dP_constant(t, pd, pnd):
+    return 0.0
+
+# No pressure (P=0)
+def P_none(t, pd, pnd):
+    return 0.0
+def dP_none(t, pd, pnd):
     return 0.0

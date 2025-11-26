@@ -13,15 +13,15 @@ a_fric=0.005      # direct effect coefficient
 b_fric=0.01       # evolution effect coefficient
 eta_visc=1.0E18   # viscosity (Pa.s)
 sigma_n=50.0E6    # normal stress (Pa)
-dc=0.01           # critical slip distance (m)
-V_p=1.0E-6        # tectonic speed (m/s)
+dc=1e-4           # critical slip distance (m)
+V_p=1.0E-9        # tectonic speed (m/s)
 
 #-------------------------------------#
 # ND Mechanical parameter definition
 #-------------------------------------#
-a=0.6
+a=1.3
 eta=1.0E-11
-k=0.41
+k=0.4
 
 #-------------------------------------------#
 # Computational parameter definition
