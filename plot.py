@@ -3,7 +3,7 @@ from types import NoneType
 from result import Result
 import matplotlib.pyplot as plt
 
-path = 'Results/PR_QDYN_RNS_modele_oriente/01'
+path = '  '
 data = Result.load_results(path)
 data.slip_rate_evolution() # Plot slip rate evolution58479002277847_1.0.pkl") # Load previously saved results in the Res
 data.phase_portrait() # Plot phase portrait
