@@ -59,9 +59,3 @@ plt.plot(time,signal,color='k')
 plt.scatter(time[indice_debut_injection],signal[indice_debut_injection],marker='+',s=1000)
 plt.grid()
 plt.show()
-=======
-
-data.slip_rate_evolution()
-
-data.fft_cycle_period(output=True)
->>>>>>> bc86bed1d641a70c8a76c9cd9dee7a7c9560ea7e
