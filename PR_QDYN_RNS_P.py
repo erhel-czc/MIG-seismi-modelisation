@@ -57,7 +57,7 @@ def P(t):
     P0barre = (pd.P0/pd.sigma_n)
     rbarre = (pd.r*pd.b_fric*pd.sigma_n) / (pd.mu*pd.dc)
     cbarre = pd.c * (pd.b_fric**2 * pd.sigma_n**2)/(pd.V_p * pd.mu**2 * pd.dc)
-    return pd.sigma_n*P0barre * math.erfc(rbarre / 2*math.sqrt(cbarre * t))
+    return pd.sigma_n*P0barre * math.erfc(rbarre / (2*math.sqrt(cbarre * t)))
 
 def Pdot(t):
     P0barre = (pd.P0/pd.sigma_n)
