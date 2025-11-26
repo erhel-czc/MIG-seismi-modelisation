@@ -57,7 +57,7 @@ def P(t):
     P0barre = (pd.P0/pd.sigma_n)
     rbarre = (pd.r*pd.b_fric*pd.sigma_n) / (pd.mu*pd.dc)
     cbarre = pd.c * (pd.b_fric**2 * pd.sigma_n**2)/(pd.V_p * pd.mu**2 * pd.dc)
-    return pd.sigma_n*P0barre * math.erfc(rbarre / 2*math.sqrt(cbarre * t))
+    return pd.sigma_n*P0barre * math.erfc(rbarre / (2*math.sqrt(cbarre * t)))
 
 def Pdot(t):
     P0barre = (pd.P0/pd.sigma_n)
@@ -206,7 +206,8 @@ if __name__ == "__main__":  # to allow import without running the simulation
     Phipoint = Dphi / Dt
     Vpoint = V[1:] * Phipoint
     #Vpointln = np.log(Vpoint)
+    Pvalues = np.array([P(t) for t in T])
 
     # save results
-    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, pd=pd, pnd=pnd, pc=pc, Tau=None, Sigma_n=None, filename = 'pressure1')  # add filename if needed (filename = "custom_name.pkl")
+    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, pd=pd, pnd=pnd, pc=pc, P=Pvalues, Tau=None, Sigma_n=None, filename = 'pressure1')  # add filename if needed (filename = "custom_name.pkl")
     r.save_results('PR_QDYN_RNS_P')  # add folder name if needed (foldername = "folder".pkl")
