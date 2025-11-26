@@ -21,7 +21,7 @@ a_fric=0.005      # direct effect coefficient
 b_fric=0.01       # evolution effect coefficient
 dc=1.0E-4           # critical slip distance (m)
 V_p=1.0E-9        # tectonic speed (m/s)
-r_real = 1.0e2  # distance to the injection point (m)
+r_real = 1.0e2 # distance to the injection point (m)
 c_real = 6.8e-2  # hydraulic diffusivity (m2/s)
 Pinf = 2.5e7     # injection pressure (Pa)
 
