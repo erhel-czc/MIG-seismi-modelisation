@@ -78,54 +78,59 @@ class Result:
 
         return data
     
-    def magnitude(self):
-        threshold_velocity = 1/self.pd.V_p  # Define a threshold velocity to identify slip events
+    def magnitude(self, print_result=True):
+        try :
+            threshold_velocity = 1/self.pd.V_p  # Define a threshold velocity to identify slip events
 
-        T=self.T
-        V=self.V
-        deplacement=0
+            T=self.T
+            V=self.V
+            deplacement=0
 
-        if max(V) > threshold_velocity:
-            while len(T)>0 and V[0] < threshold_velocity:
-                T = T[1:]
-                V = V[1:]
+            if max(V) > threshold_velocity:
+                while len(T)>0 and V[0] < threshold_velocity:
+                    T = T[1:]
+                    V = V[1:]
 
-            while len(T)>0 and V[0] > threshold_velocity:
-                deplacement += V[0] * (T[1] - T[0])
-                T = T[1:]
-                V = V[1:]
-            
-            deplacement *= self.pd.dc
-            
-            print(f"Slip event detected. Total slip displacement: {deplacement}.")   
+                while len(T)>0 and V[0] > threshold_velocity:
+                    deplacement += V[0] * (T[1] - T[0])
+                    T = T[1:]
+                    V = V[1:]
+                
+                deplacement *= self.pd.dc
+                
+                if print_result:
+                    print(f"Slip event detected. Total slip displacement: {deplacement}.")   
 
-            def compute_magnitude(deplacement, pd):
-                """
-                Calculate the moment magnitude based on slip displacement and physical parameters.
+                def compute_magnitude(deplacement, pd):
+                    """
+                    Calculate the moment magnitude based on slip displacement and physical parameters.
 
-                Parameters:
-                deplacement (float): Slip displacement in meters.
-                pd (PhysicalData): An instance of the PhysicalData class containing physical parameters.
+                    Parameters:
+                    deplacement (float): Slip displacement in meters.
+                    pd (PhysicalData): An instance of the PhysicalData class containing physical parameters.
 
-                Returns:
-                float: Calculated moment magnitude.
-                """
-                mu = pd.shear
-                L = pd.lenght_fault
+                    Returns:
+                    float: Calculated moment magnitude.
+                    """
+                    mu = pd.shear
+                    L = pd.lenght_fault
 
-                # Calculate seismic moment (M0)
-                M0 = mu * L**2 * deplacement  # in Newton-meters
+                    # Calculate seismic moment (M0)
+                    M0 = mu * L**2 * deplacement  # in Newton-meters
 
-                # Calculate moment magnitude (Mw)
-                Mw = (2/3) * np.log10(M0) - 6.0
+                    # Calculate moment magnitude (Mw)
+                    Mw = (2/3) * np.log10(M0) - 6.0
 
-                return Mw
+                    return Mw
 
-            print(f"Calculated moment magnitude: {compute_magnitude(deplacement, self.pd)}")
+                if print_result :print(f"Calculated moment magnitude: {compute_magnitude(deplacement, self.pd)} for {self.filename}.")
 
-            return compute_magnitude(deplacement, self.pd)
-        else:
-            print("No slip event detected.")
+                return compute_magnitude(deplacement, self.pd)
+            else:
+                if print_result : print(f"No slip event detected for {self.filename}.")
+    
+        except :
+            print(f"Magnitude calculation failed for {self.filename}.")
 
     def slip_rate_evolution(self, save=False, path='', name=''):
         """

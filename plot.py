@@ -14,3 +14,5 @@ if data.Sigma_n.__class__ != NoneType:
 if data.P.__class__ != NoneType:
     data.pressure_evolution(save = True, path = 'images/pressure/', name='pressure1') # Plot pressure evolution
 plt.show()
+
+data.magnitude() # Compute moment magnitude
