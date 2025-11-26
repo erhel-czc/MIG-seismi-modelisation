@@ -10,7 +10,7 @@ from result import Result
 #-------------------------------------#
 shear=1.0E11    # shear modulus (Pa)
 rho_roc=2700.0  # rock density (kg/m3)
-lenght_fault=1.0E3  # fault lenght (m)
+lenght_fault=1.0E2  # fault lenght (m)
 depth_fault=3.0E3   # fault depth (m)
 a_fric=0.005      # direct effect coefficient
 b_fric=0.01       # evolution effect coefficient
@@ -293,5 +293,5 @@ if __name__ == "__main__": # to allow import without running the simulation
 
 
     # save results
-    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc) # add filename if needed (filename = "custom_name.pkl")
+    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc, filename = '02') # add filename if needed (filename = "custom_name.pkl")
     r.save_results('PR_QDYN_RNS_modele_oriente')

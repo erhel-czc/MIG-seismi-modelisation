@@ -16,7 +16,7 @@ if max(V) > threshold_velocity:
         V = V[1:]
 
     while len(T)>0 and V[0] > threshold_velocity:
-        deplacement += (V[0]+V[1]) * (T[1] - T[0])
+        deplacement += V[0] * (T[1] - T[0])
         T = T[1:]
         V = V[1:]
     
