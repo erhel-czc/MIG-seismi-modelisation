@@ -1,0 +1,14 @@
+from result import Result
+import matplotlib.pyplot as plt
+
+
+def plot_Mw_vs_lenght_fault(num_save):
+    paths = [f'/Users/rico/Desktop/Mines/MIG/Semaine 2/MIG-seismi-modelisation/Results/PR_QDYN_RNS_modele_oriente/Lenght_Fault_varies/Lenght Fault {i}' for i in range(num_save)]
+    data = [Result.load_results(path) for path in paths]
+    lenght_faults = [d.pd.lenght_fault for d in data]
+    Mw = [d.magnitude(print_result=False) for d in data]
+
+    plt.plot(lenght_faults, Mw, marker='o')
+    plt.show()
+
+plot_Mw_vs_lenght_fault(100)

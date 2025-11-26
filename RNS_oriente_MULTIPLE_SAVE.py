@@ -10,7 +10,7 @@ from result import Result
 #-------------------------------------#
 shear=1.0E11    # shear modulus (Pa)
 rho_roc=2700.0  # rock density (kg/m3)
-lenght_fault=5.0E4  # fault lenght (m)
+## lenght_fault=1.0E2  # fault lenght (m) # this parameter will be changed in the loop
 depth_fault=3.0E3   # fault depth (m)
 a_fric=0.005      # direct effect coefficient
 b_fric=0.01       # evolution effect coefficient
@@ -91,30 +91,13 @@ class ParamComp:
         self.safe=safe
 
 
+# pd and pnd are defined below
 
-
-#-------------------------------------#
-# Dimensional Mechanical parameter definition
-#-------------------------------------#
-
-pd = ParamMec(shear=shear, rho_rock=rho_roc, lenght_fault=lenght_fault, depth_fault=depth_fault, a_fric=a_fric, b_fric=b_fric, dc=dc, V_p=V_p)
-
-#-------------------------------------#
-# ND Mechanical parameter definition
-#-------------------------------------#
-
-pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n0*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n0), psi=psi, f0=f0, b=pd.b_fric)
-
-f=pnd.f0 + pnd.a*pnd.b*np.log(v) + pnd.b*np.log(th)  # initial frictional resistance (ND)
-
-cpsi=np.cos(pnd.psi)
-spsi=np.sin(pnd.psi)
 
 #-------------------------------------------#
 # Computational parameter definition
 #-------------------------------------------#
 pc = ParamComp(tol, nitrkmax, nitmax, hmin, hmax, safe)
-
 
 
 def f_rns(phi, nu, pnd):
@@ -258,40 +241,59 @@ def rkf(phi,nu, sigma_n, f, h, pnd, pc):
 #-------------------------------------------#
 
 if __name__ == "__main__": # to allow import without running the simulation
-    T=np.array([t])
-    Phi=np.array([phi])
-    Nu=np.array([nu])
-    Sigma_n=np.array([sigma_n])
-    F = np.array([f])
-    Tau = np.array([f*sigma_n])
-    Dphi=np.array([])
-    Dnu=np.array([])
 
-    for iter in range(0,pc.nitmax,1):
-        #--update phi, nu and h
-        phi, nu, sigma_n, dphi, dnu, dsigma, h = rkf(phi, nu, sigma_n, f, h, pnd, pc)
+    #-------------------------------------------#
+    #Multiple saves with different fault lenghts#
+    #-------------------------------------------#
+    num_save = 100
 
-        #--update time
-        t+=h
+    lenght_fault_min = 8.0E1
+    lenght_fault_max = 5.0E4
 
-        #--store results
-        T=np.append(T,[t])
-        Phi=np.append(Phi,[phi])
-        Nu=np.append(Nu,[nu])
-        Sigma_n=np.append(Sigma_n,[sigma_n])
-        F=np.append(F,[f_rns(phi,nu,pnd)])
-        Tau = np.append(Tau, [f*sigma_n])
-        Dphi=np.append(Dphi,[dphi])
-        Dnu=np.append(Dnu,[dnu])
+    lenght_faults = np.linspace(lenght_fault_min, lenght_fault_max, num_save)
+
+    for i in range(num_save):
+        pd = ParamMec(shear=shear, rho_rock=rho_roc, lenght_fault=lenght_faults[i], depth_fault=depth_fault, a_fric=a_fric, b_fric=b_fric, dc=dc, V_p=V_p)
+        pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n0*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n0), psi=psi, f0=f0, b=pd.b_fric)
+
+        f=pnd.f0 + pnd.a*pnd.b*np.log(v) + pnd.b*np.log(th)  # initial frictional resistance (ND)
+        cpsi=np.cos(pnd.psi)
+        spsi=np.sin(pnd.psi)
+
+        T=np.array([t])
+        Phi=np.array([phi])
+        Nu=np.array([nu])
+        Sigma_n=np.array([sigma_n])
+        F = np.array([f])
+        Tau = np.array([f*sigma_n])
+        Dphi=np.array([])
+        Dnu=np.array([])
+
+        for iter in range(0,pc.nitmax,1):
+            #--update phi, nu and h
+            phi, nu, sigma_n, dphi, dnu, dsigma, h = rkf(phi, nu, sigma_n, f, h, pnd, pc)
+
+            #--update time
+            t+=h
+
+            #--store results
+            T=np.append(T,[t])
+            Phi=np.append(Phi,[phi])
+            Nu=np.append(Nu,[nu])
+            Sigma_n=np.append(Sigma_n,[sigma_n])
+            F=np.append(F,[f_rns(phi,nu,pnd)])
+            Tau = np.append(Tau, [f*sigma_n])
+            Dphi=np.append(Dphi,[dphi])
+            Dnu=np.append(Dnu,[dnu])
 
 
-    V=np.exp(Phi)
-    Dt=np.diff(T)
-    Phipoint=Dphi/Dt
-    Vpoint=V[1:]*Phipoint
-    
+        V=np.exp(Phi)
+        Dt=np.diff(T)
+        Phipoint=Dphi/Dt
+        Vpoint=V[1:]*Phipoint
+        
 
 
-    # save results
-    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc, filename = '01') # add filename if needed (filename = "custom_name.pkl")
-    r.save_results('PR_QDYN_RNS_modele_oriente')
+        # save results
+        r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc, filename = f'Lenght Fault {i}') # add filename if needed (filename = "custom_name.pkl")
+        r.save_results('PR_QDYN_RNS_modele_oriente/Lenght_Fault_varies')
