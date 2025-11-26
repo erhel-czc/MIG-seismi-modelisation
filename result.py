@@ -234,7 +234,7 @@ class Result:
 
         plt.figure('Pressure evolution')
 
-        plt.plot(self.T, self.P, '-k')
+        plt.plot(self.T, self.P, '-k') # type: ignore
         plt.xlabel('Time (s)')
         plt.ylabel('Pressure (Pa)')
         plt.title(r'Pressure evolution')
@@ -245,3 +245,53 @@ class Result:
                 plt.savefig(f'{path}/pressure_evol_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
             else:
                 plt.savefig(f'{path}/pressure_evol_{name}.pdf')
+
+    def fft_cycle_period(self, output=False, threshold_amplitude=0.05, save=False, path='', name=''):
+        """
+        Plot the FFT of the slip rate signal to determine the cycle period.
+
+        Parameters
+        ----------
+        output : bool
+            If True, print the dominant cycle period, and show the figure.
+        save : bool
+            If True, save the figure in the given path.
+        path : str
+            The path where the figure will be saved.
+        name : str
+            The name to use when saving the figure.
+        """
+        signal = self.V
+        time = self.T
+
+        sampling_rate = 1 / np.mean(np.diff(time))
+        fft = np.fft.rfft(signal)
+        freqs = np.fft.rfftfreq(len(signal), d=1/sampling_rate)
+        
+        period = 1 / freqs[np.argmax(np.abs(fft[1:])) + 1]
+
+        max_amp = np.max(np.abs(fft))
+        threshold = threshold_amplitude * max_amp
+        mask = np.abs(fft) >= threshold
+        fft = fft[mask]
+        freqs = freqs[mask]
+
+        plt.figure('FFT of v(t)')
+        plt.plot(freqs, np.abs(fft), '-k')
+        plt.xlabel('Frequency (Hz)')
+        plt.ylabel('Amplitude')
+        plt.title(r'FFT of v(t), cycle period T=%.2f, ($\kappa$=%.2f, $\alpha$=%.2f)' % (period, self.pnd.k, self.pnd.a))
+        plt.grid()
+
+        
+        if output:
+            print(f"Dominant cycle period: {period} (ND) for k={self.pnd.k}, a={self.pnd.a}.")
+            plt.show()
+
+        if save:
+            if name == '':
+                plt.savefig(f'{path}/fft_cycle_period_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
+            else:
+                plt.savefig(f'{path}/fft_cycle_period_{name}.pdf')
+
+        return period
