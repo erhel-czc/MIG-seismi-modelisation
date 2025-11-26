@@ -241,7 +241,7 @@ class Result:
             path : str
                 The path where the figure will be saved.
             """
-            plt.figure('Normal stress evolution')
+            plt.figure('Log Theta evolution')
 
             plt.plot(self.T, self.Nu, '-k')
             plt.xlabel('Time (ND)')
@@ -256,7 +256,7 @@ class Result:
 
         plt.figure('Pressure evolution')
 
-        plt.plot(self.T, self.P, '-k') # type: ignore
+        plt.plot(self.T*self.pd.dc/self.pd.V_p, self.P, '-k') # type: ignore
         plt.xlabel('Time (s)')
         plt.ylabel('Pressure (Pa)')
         plt.title(r'Pressure evolution')
