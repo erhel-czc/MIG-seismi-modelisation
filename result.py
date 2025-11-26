@@ -229,6 +229,28 @@ class Result:
 
         if save:
             plt.savefig(f'{path}/normal_stress_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
+        
+    def theta_evolution(self, save=False, path=''):
+            """
+            Plot the theta evolution.
+
+            Parameters
+            ----------
+            save : bool
+                If True, save the figure in the given path.
+            path : str
+                The path where the figure will be saved.
+            """
+            plt.figure('Normal stress evolution')
+
+            plt.plot(self.T, self.Nu, '-k')
+            plt.xlabel('Time (ND)')
+            plt.ylabel('Log Theta (ND)')
+            plt.title(r'Log Theta evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
+            plt.grid()
+
+            if save:
+                plt.savefig(f'{path}/normal_stress_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
 
     def pressure_evolution(self, save=False, path='', name=''):
 
