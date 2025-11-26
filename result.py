@@ -197,7 +197,7 @@ class Result:
         path : str
             The path where the figure will be saved.
         """
-        plt.figure('Shear stress evolution')
+        plt.figure('Tau stress evolution')
 
         plt.plot(self.T*self.pd.dc/self.pd.V_p, self.Tau*self.pd.sigma_n0, '-k')
         plt.xlabel('Time (s)')
