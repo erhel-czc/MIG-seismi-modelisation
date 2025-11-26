@@ -1,0 +1,93 @@
+\documentclass[10pt]{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{geometry}
+\geometry{hmargin=2.5cm,vmargin=1.5cm}
+
+\title{with pressure(t)}
+\author{Léonard Duval-laude}
+\date{Novembre 2025}
+
+\begin{document}
+
+\maketitle
+
+\section{Cas horizontal}
+D'après l'article "JGR Solid Earth - 2015 - Segall - Injection induced seismicity  Poroelastic and earthquake nucleation effects", on a l'expression de la pression fluide en fonction du temps t à une dsitance r du point d'injection (où $q$ est le débit volumique, $k$ la perméabilité, $\eta$ la viscosité dynamique et $\rho}_0$ la masse volumique du fluide) :
+
+\begin{equation}
+P(t)
+= \frac{q }{4\pi{\rho}_0 r}\frac{\eta}{k}\operatorname{erfc}(\frac{r}{2\sqrt{ct}})= P_{\infty}\operatorname{erfc}(\frac{r}{2\sqrt{ct}})
+\end{equation}
+
+La pression de fluide "soulage" la contrainte normale et on a:
+\begin{equation}
+\eta v 
+= -k\left( l^{*} + \delta - v_p t \right)
+  - f(t)(\sigma -P(t))
+\end{equation}
+
+On dérive par rapport au temps :
+\begin{equation}
+\eta \frac{dv}{dt}
+= -k (v - v_p)
+  - \left(\frac{df}{dt}(\sigma_0 -P(t))-\frac{dP}{dt}f(t)\right)
+\end{equation}
+
+On multiplie par $\frac{d_c}{v_p b \sigma_0}$ (idem que le cas sans pression de fluide) :
+
+\begin{equation}
+\left(\bar{\eta}+\frac{\alpha}{\bar{v}}(1-\frac{P(t)}{\sigma_0})\right) \frac{d\bar{v}}{d\bar{t}}
+=
+-\kappa (\bar{v} - 1) + (\bar{v}-\frac{1}{\bar{\theta}})(1-\frac{P(t)}{\sigma_0})
+  + \left(f_0+a\ln{\bar{(v)}}+b\ln{\bar{(\theta)}}\right)\frac{d_c}{v_p b \sigma_0}\frac{dP}{dt}
+\end{equation}
+
+
+
+Or, on a:
+
+\begin{equation}
+\frac{P(t)}{\sigma_0}=\bar{P_{\infty}}\operatorname{erfc}(\frac{\bar{r}}{2\sqrt{\bar{c}\bar{t}}})
+\end{equation}
+
+\begin{equation} 
+\frac{d_c}{v_p b \sigma_0}\frac{dP}{dt} =\frac{1}{b}\frac{1}{2\sqrt{\pi}}\frac{\bar{P_{\infty}}}{\bar{t}}\frac{\bar{r}}{\sqrt{\bar{c}\bar{t}}}
+e^{-\left(\frac{\bar{r}}{2\sqrt{\bar{c}\bar{t}}}\right)^2}
+\end{equation}
+Les variables adimensionnées étant:
+$$
+\bar{r} = \frac{r}{L^{\star}}=\frac{r}{\frac{\mu d_c}{b \sigma_0}}, \qquad 
+\bar{c} = c\frac{b^2\sigma_0^2}{v_p \mu^2 d_c}, \qquad 
+\bar{P_{\infty}}=\frac{P_{\infty}}{\sigma_0}
+$$
+
+
+\begin{equation}
+\fbox{\[
+\displaystyle \frac{-\kappa(\bar{v} - 1)
+  +(\bar{v}
+  - \frac{1}{\bar{\theta}})(1-\bar{P_{\infty}}\operatorname{erfc}(\frac{\bar{r}}{2\sqrt{\bar{c}\bar{t}}}))+\left(\frac{f_0}{b}+\alpha\ln{\bar{(v)}}+\ln{\bar{(\theta)}}\right)\frac{\bar{P_{\infty}}}{\bar{t}}\frac{\bar{r}}{2\sqrt{\pi\bar{c}\bar{t}}}e^{-\left(\frac{\bar{r}}{2\sqrt{\bar{c}\bar{t}}}\right)^2}}{\bar{\eta}\bar{v}+\alpha(1-\bar{P_{\infty}}\operatorname{erfc}(\frac{\bar{r}}{2\sqrt{\bar{c}\bar{t}}}))}d\bar{t} = \frac{d\bar{v}}{\bar{v}} \]} 
+\end{equation}
+
+\section{En rajoutant un angle $\phi$}
+L'équation (3) devient alors:
+
+\begin{equation}
+\eta \frac{dv}{dt}
+= -k (v \sin{(\phi)} - v_p)\sin{(\phi)}
+  - \left(\frac{df}{dt}(\sigma(t) -P(t))+\frac{d(\sigma-P)}{dt}f(t)\right)
+\end{equation}
+
+L'équation finale précédente (7) devient:
+
+\begin{equation}
+\fbox{\[
+\displaystyle \frac{-\kappa(\bar{v} \sin{(\phi)} - 1)\sin{(\phi)}
+  +(\bar{v}
+  - \frac{1}{\bar{\theta}})(\frac{\sigma(t)}{\sigma_0}-\frac{P(t)}{\sigma_0})-\left(\frac{f_0}{b}+\alpha\ln{\bar{(v)}}+\ln{\bar{(\theta)}}\right)\frac{d(\sigma -P)}{dt}\frac{d_c}{v_p \sigma_0}}{\bar{\eta}\bar{v}+\alpha(\frac{\sigma(t)}{\sigma_0}-\frac{P(t)}{\sigma_0})}d\bar{t} = \frac{d\bar{v}}{\bar{v}} \]} 
+\end{equation}
+
+
+
+
+\end{document}
