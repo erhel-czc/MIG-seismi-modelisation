@@ -17,3 +17,6 @@ _Objectif : modéliser la sismicité induite par injection de fluide en géother
 - modifications du module de gestion des résultats pour gérer les nouveaux paramètres du modèle orienté
 - ajout d'un module de calcul de magnitude
 - Objectif : retrouver la loi Mw = f(L), après avoir créer un programme de 'lancementé' permettant d'enregistrer des centaines de séismes aléatoires (ou pas).
+- Modélisation (début code Python et calculs mis au propre sur LaTex) du problème avec pression fluide dépendant du temps (puit d'injection à une distance r).
+
+## Jour 3
