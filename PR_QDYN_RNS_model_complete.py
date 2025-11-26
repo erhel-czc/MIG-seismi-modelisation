@@ -21,8 +21,8 @@ a_fric=0.005      # direct effect coefficient
 b_fric=0.01       # evolution effect coefficient
 dc=1.0E-4           # critical slip distance (m)
 V_p=1.0E-9        # tectonic speed (m/s)
-r_real = 1.0e2 # distance to the injection point (m)
-c_real = 6.8e-2  # hydraulic diffusivity (m2/s)
+r_real = 1.0e3 # distance to the injection point (m)
+c_real = 6.8e-3  # hydraulic diffusivity (m2/s)
 Pinf = 2.5e7     # injection pressure (Pa)
 
 
@@ -338,9 +338,9 @@ if __name__ == "__main__": # to allow import without running the simulation
     Dt=np.diff(T)
     Phipoint=Dphi/Dt
     Vpoint=V[1:]*Phipoint
-    
+    Pvalues = np.array([pd.sigma_n0*P(t,pd,pnd) for t in T])
 
 
     # save results
-    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc, filename = '01') # add filename if needed (filename = "custom_name.pkl")
+    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc, P=Pvalues, filename = '01') # add filename if needed (filename = "custom_name.pkl")
     r.save_results('PR_QDYN_RNS_modele_oriente')
