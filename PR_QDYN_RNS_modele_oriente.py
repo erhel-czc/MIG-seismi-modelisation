@@ -8,21 +8,15 @@ from result import Result
 #-------------------------------------#
 # Dimensional Mechanical parameter definition
 #-------------------------------------#
-shear=1.0E11    # shear modulus (Pa)
+shear=1.0E11    # shear modulus (Pa) 
 rho_roc=2700.0  # rock density (kg/m3)
-lenght_fault=5.0E4  # fault lenght (m)
-depth_fault=3.0E3   # fault depth (m)
+lenght_fault=1.0E3  # fault lenght (m)
+depth_fault=1.0E3   # fault depth (m)
 a_fric=0.005      # direct effect coefficient
 b_fric=0.01       # evolution effect coefficient
 dc=1.0E-4           # critical slip distance (m)
-V_p=1.0E-9        # tectonic speed (m/s)
+V_p=1.0E-10        # tectonic speed (m/s)
 
-#-------------------------------------#
-# ND Mechanical parameter definition
-#-------------------------------------#
-a=0.6
-eta=1.0E-11
-k=0.41
 
 #-------------------------------------------#
 # Computational parameter definition
@@ -37,9 +31,9 @@ safe=0.8      # safety factor for RKF iterations
 #-------------------------------------------#
 # Initial conditions (ND variables)
 #-------------------------------------------#
-v=2       # initial normalized slip rate
+v=2      # initial normalized slip rate
 th=1/v      # initial normalized state variable
-sigma_n=1.0  # initial normal stress (ND)
+sigma_n=1  # initial normal stress (ND)
 
 t=0.0       # initial time
 h=0.001     # initial time step
@@ -294,4 +288,4 @@ if __name__ == "__main__": # to allow import without running the simulation
 
     # save results
     r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc, filename = '01') # add filename if needed (filename = "custom_name.pkl")
-    r.save_results('PR_QDYN_RNS_modele_oriente')
+    r.save_results("PR_QDYN_RNS_modele_oriente")

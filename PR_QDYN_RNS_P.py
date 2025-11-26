@@ -16,7 +16,7 @@ pd = ParamMec(k_rigidity=3.0E10,  # rigidity (Pa)
               a_fric=0.005,  # direct effect coefficient
               b_fric=0.01,  # evolution effect coefficient
               eta_visc=1.0E18,  # viscosity (Pa.s)
-              sigma_n=50.0E6,  # normal stress (Pa)
+              sigma_n=50.0E5,  # normal stress (Pa)
               dc= 1e-4,  # critical slip distance (m)
               V_p=1.0e-9, # tectonic speed (m/s)
               f0 = 0.6,
@@ -28,7 +28,7 @@ pd = ParamMec(k_rigidity=3.0E10,  # rigidity (Pa)
 # -------------------------------------#
 # ND Mechanical parameter definition
 # -------------------------------------#
-pnd = NdParamMec(a=1.3, eta=1.0E-11, k=0.4)
+pnd = NdParamMec(a=1.7, eta=1.0E-11, k=0.4)
 
 # pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n))
 
@@ -153,31 +153,31 @@ def rkf(phi, nu, t, h, pnd, pc):
         dphi = c21 * k1
         dnu = c21 * l1
 
-        k2 = h * frns(phi + dphi, nu + dnu, t, pd, pnd)
+        k2 = h * frns(phi + dphi, nu + dnu, t + h/4, pd, pnd)
         l2 = h * grns(phi + dphi, nu + dnu)
 
         dphi = c31 * k1 + c32 * k2
         dnu = c31 * l1 + c32 * l2
 
-        k3 = h * frns(phi + dphi, nu + dnu, t, pd, pnd)
+        k3 = h * frns(phi + dphi, nu + dnu, t + (3*h)/8, pd, pnd)
         l3 = h * grns(phi + dphi, nu + dnu)
 
         dphi = c41 * k1 + c42 * k2 + c43 * k3
         dnu = c41 * l1 + c42 * l2 + c43 * l3
 
-        k4 = h * frns(phi + dphi, nu + dnu, t, pd, pnd)
+        k4 = h * frns(phi + dphi, nu + dnu, t + (12*h)/13, pd, pnd)
         l4 = h * grns(phi + dphi, nu + dnu)
 
         dphi = c51 * k1 + c52 * k2 + c53 * k3 + c54 * k4
         dnu = c51 * l1 + c52 * l2 + c53 * l3 + c54 * l4
 
-        k5 = h * frns(phi + dphi, nu + dnu, t, pd, pnd)
+        k5 = h * frns(phi + dphi, nu + dnu, t+h, pd, pnd)
         l5 = h * grns(phi + dphi, nu + dnu)
 
         dphi = c61 * k1 + c62 * k2 + c63 * k3 + c64 * k4 + c65 * k5
         dnu = c61 * l1 + c62 * l2 + c63 * l3 + c64 * l4 + c65 * l5
 
-        k6 = h * frns(phi + dphi, nu + dnu, t, pd, pnd)
+        k6 = h * frns(phi + dphi, nu + dnu, t + h/2, pd, pnd)
         l6 = h * grns(phi + dphi, nu + dnu)
 
         # Error estimation

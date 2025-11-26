@@ -20,3 +20,4 @@ _Objectif : modéliser la sismicité induite par injection de fluide en géother
 - Modélisation (début code Python et calculs mis au propre sur LaTex) du problème avec pression fluide dépendant du temps (puit d'injection à une distance r).
 
 ## Jour 3
+- tracé de la magnitude Mw en fonction de la longueur de la faille L
