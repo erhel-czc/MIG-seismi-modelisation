@@ -126,7 +126,7 @@ class Result:
         else:
             print("No slip event detected.")
 
-    def slip_rate_evolution(self, save=False, path=''):
+    def slip_rate_evolution(self, save=False, path='', name=''):
         """
         Plot the slip rate evolution of the speed.
 
@@ -148,9 +148,12 @@ class Result:
         # plt.xlim([0, 100])
         #plt.savefig('images/modif_parameters/slip_rate_k%.2f_a%.2f.pdf' % (self.pnd.k, self.pnd.a))
         if save:
-            plt.savefig(f'{path}/slip_rate_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
+            if name == '':
+                plt.savefig(f'{path}/slip_rate_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
+            else:
+                plt.savefig(f'{path}/slip_rate_{name}.pdf')
 
-    def phase_portrait(self, save=False, path=''):
+    def phase_portrait(self, save=False, path='', name=''):
         """
         Plot the phase portrait of the speed.
 
@@ -172,7 +175,10 @@ class Result:
         plt.grid()
 
         if save:
-            plt.savefig(f'{path}/phase_portrait_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
+            if name == '':
+                plt.savefig(f'{path}/phase_portrait_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
+            else:
+                plt.savefig(f'{path}/phase_portrait_{name}.pdf')
 
     def tau_evolution(self, save=False, path=''):
         """
