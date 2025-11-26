@@ -153,31 +153,31 @@ def rkf(phi, nu, t, h, pnd, pc):
         dphi = c21 * k1
         dnu = c21 * l1
 
-        k2 = h * frns(phi + dphi, nu + dnu, t, pd, pnd)
+        k2 = h * frns(phi + dphi, nu + dnu, t + h/4, pd, pnd)
         l2 = h * grns(phi + dphi, nu + dnu)
 
         dphi = c31 * k1 + c32 * k2
         dnu = c31 * l1 + c32 * l2
 
-        k3 = h * frns(phi + dphi, nu + dnu, t, pd, pnd)
+        k3 = h * frns(phi + dphi, nu + dnu, t + (3*h)/8, pd, pnd)
         l3 = h * grns(phi + dphi, nu + dnu)
 
         dphi = c41 * k1 + c42 * k2 + c43 * k3
         dnu = c41 * l1 + c42 * l2 + c43 * l3
 
-        k4 = h * frns(phi + dphi, nu + dnu, t, pd, pnd)
+        k4 = h * frns(phi + dphi, nu + dnu, t + (12*h)/13, pd, pnd)
         l4 = h * grns(phi + dphi, nu + dnu)
 
         dphi = c51 * k1 + c52 * k2 + c53 * k3 + c54 * k4
         dnu = c51 * l1 + c52 * l2 + c53 * l3 + c54 * l4
 
-        k5 = h * frns(phi + dphi, nu + dnu, t, pd, pnd)
+        k5 = h * frns(phi + dphi, nu + dnu, t+h, pd, pnd)
         l5 = h * grns(phi + dphi, nu + dnu)
 
         dphi = c61 * k1 + c62 * k2 + c63 * k3 + c64 * k4 + c65 * k5
         dnu = c61 * l1 + c62 * l2 + c63 * l3 + c64 * l4 + c65 * l5
 
-        k6 = h * frns(phi + dphi, nu + dnu, t, pd, pnd)
+        k6 = h * frns(phi + dphi, nu + dnu, t + h/2, pd, pnd)
         l6 = h * grns(phi + dphi, nu + dnu)
 
         # Error estimation
