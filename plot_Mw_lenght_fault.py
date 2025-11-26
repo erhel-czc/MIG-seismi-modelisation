@@ -18,7 +18,7 @@ def plot_Mw_vs_lenght_fault(num_save):
     plt.title('Moment Magnitude vs Lenght Fault')
     plt.grid()
     
-    plt.savefig('Results/Mw_vs_lenght_fault.pdf')
+    plt.savefig('images/Mw_vs_lenght_fault.pdf')
 
     plt.show()
 
