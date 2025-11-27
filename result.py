@@ -131,6 +131,33 @@ class Result:
     
         except :
             print(f"Magnitude calculation failed for {self.filename}.")
+    
+    def frequencies(self, print_result=True):
+        T=self.T
+        Phi=self.Phi
+        maxima=[]
+        periods=[]
+
+        while len(T)>1:
+            while len(T)>1 and Phi[0] < Phi[1]:
+                T = T[1:]
+                Phi = Phi[1:]
+            maxima.append(T[0])
+            T = T[1:]
+            Phi = Phi[1:]
+            while len(T)>1 and Phi[0] > Phi[1]:
+                T = T[1:]
+                Phi = Phi[1:]
+
+        for i in range(1, len(maxima)):
+            periods = np.append(periods, [maxima[i]-maxima[i-1]])
+        
+        if print_result :
+            if len(periods)>0:
+                print(f"Periods: {periods*self.pd.dc/self.pd.V_p} in s for {self.filename}.")
+            else:
+                print(f"No frequency detected for {self.filename}.")
+
 
     def slip_rate_evolution(self, save=False, path='', name=''):
         """
