@@ -1,3 +1,4 @@
+
 import numpy as np
 import matplotlib.pyplot as plt
 import math
@@ -17,7 +18,7 @@ shear=2.0E10    # shear modulus (Pa)
 rho_roc=2700.0  # rock density (kg/m3)
 lenght_fault=1.0E3  # fault lenght (m)
 depth_fault=3.0E3   # fault depth (m)
-a_fric=0.005      # direct effect coefficient
+a_fric=0.012     # direct effect coefficient
 b_fric=0.01       # evolution effect coefficient
 dc=1.0E-4           # critical slip distance (m)
 V_p=1.0E-9        # tectonic speed (m/s)
@@ -29,7 +30,7 @@ Pinf = 2.5e8     # injection pressure (Pa)
 #-------------------------------------#
 # ND Mechanical parameter definition
 #-------------------------------------#
-a=0.6
+a= a_fric/b_fric
 eta=1.0E-11
 k=0.41
 

@@ -6,11 +6,11 @@ path = 'Results/PR_QDYN_RNS/tests.pkl'
 data = Result.load_results(path)
 taux=0.5
 nb_periode_pour_securite=1
+charge=False
 
-signal = data.Phi
+signal = np.array(data.Phi)
 time = data.T
-
-period = data.fft_dominant_period()
+period = data.fft_cycle_period()
 
 N=len(time)
 max=signal.max()
@@ -29,9 +29,24 @@ while time[indice_debut]<=temps_debut:
 while time[indice_fin]>=temps_fin:
     indice_fin-=1
 
-indice_debut_injection=np.argmin(np.abs(signal[indice_debut:indice_fin]-threshhold))+indice_debut
+decalage_debut=indice_debut 
+signal_tronque=signal[indice_debut:indice_fin].copy()
+temps_tronque=time[indice_debut:indice_fin].copy()
 
+if charge == True:
+    mask= np.diff(signal_tronque)>=0
+    signal_tronque[1:][np.logical_not(mask)]=np.inf
+    indice_debut_injection=(np.abs((signal_tronque[+1:]-threshhold))).argmin()
+    indice_debut_injection+=decalage_debut+1
+
+if charge == False:
+    mask= np.diff(signal_tronque)<=0
+    signal_tronque[1:][np.logical_not(mask)]=np.inf
+    indice_debut_injection=(np.abs((signal_tronque[+1:]-threshhold))).argmin()
+    indice_debut_injection+=decalage_debut+1
+
+plt.figure(2)
 plt.plot(time,signal,color='k')
-plt.scatter(time[indice_debut_injection],signal[indice_debut_injection],marker='+',s=1000)
+plt.scatter(time[indice_debut_injection],signal[indice_debut_injection],marker='+',s=100)
 plt.grid()
 plt.show()
