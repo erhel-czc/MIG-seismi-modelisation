@@ -3,27 +3,42 @@
 \usepackage{geometry}
 \geometry{hmargin=2.5cm,vmargin=1.5cm}
 
-\title{with pressure(t)}
-\author{Léonard Duval-laude}
+\title{Modélisation d'une faille à proximité d'une zone d'injection de fluide (géothermie profonde)}
+\author{Léonard Duval-Laude}
 \date{Novembre 2025}
 
 \begin{document}
 
 \maketitle
 
-\section{Cas horizontal}
-D'après l'article "JGR Solid Earth - 2015 - Segall - Injection induced seismicity  Poroelastic and earthquake nucleation effects", on a l'expression de la pression fluide en fonction du temps t à une dsitance r du point d'injection (où $q$ est le débit volumique, $k$ la perméabilité, $\eta$ la viscosité dynamique et $\rho}_0$ la masse volumique du fluide) :
+\section{Cas horizontal ($\phi = \pi/2$)}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\linewidth]{schema_final.png}
+    \caption{Modélisation d'une faille située à une distance r du point où le fluide est injecté par la centrale de géothermie profonde.}
+    \label{fig:placeholder}
+\end{figure}
+
+D'après l'article "JGR Solid Earth - 2015 - Segall - Injection induced seismicity  Poroelastic and earthquake nucleation effects", on a l'expression de la pression fluide en fonction du temps t à une dsitance r du point d'injection (où $q$ est le débit volumique, $K$ la perméabilité, $\eta$ la viscosité dynamique et $\rho}_0$ la masse volumique du fluide) :
 
 \begin{equation}
 P(t)
-= \frac{q }{4\pi{\rho}_0 r}\frac{\eta}{k}\operatorname{erfc}(\frac{r}{2\sqrt{ct}})= P_{\infty}\operatorname{erfc}(\frac{r}{2\sqrt{ct}})
+= \frac{q }{4\pi{\rho}_0 r}\frac{\eta}{K}\operatorname{erfc}(\frac{r}{2\sqrt{ct}})=P_{\infty}\operatorname{erfc}(\sqrt{\frac{\tau}{t}})
 \end{equation}
 
-La pression de fluide "soulage" la contrainte normale et on a:
+avec: $$P_{\infty}=\frac{q }{4\pi{\rho}_0 r}\frac{\eta}{K}, \qquad
+\tau= \frac{r^2}{4c}$$
+
+En l'absence de pression fluide, seule la pression lithostatique $\sigma_0$ s'exerce:
+$\sigma_0 = \rho g h$ ($\rho$ la masse volumique moyenne de la croûte continentale)
+\\
+
+La pression de fluide "soulage" la contrainte normale ($\sigma_{eff}=\sigma_0-P(t)$) et on a:
 \begin{equation}
 \eta v 
 = -k\left( l^{*} + \delta - v_p t \right)
-  - f(t)(\sigma -P(t))
+  - f(t)(\sigma_0 -P(t))
 \end{equation}
 
 On dérive par rapport au temps :
@@ -69,7 +84,7 @@ $$
   - \frac{1}{\bar{\theta}})(1-\bar{P_{\infty}}\operatorname{erfc}(\frac{\bar{r}}{2\sqrt{\bar{c}\bar{t}}}))+\left(\frac{f_0}{b}+\alpha\ln{\bar{(v)}}+\ln{\bar{(\theta)}}\right)\frac{\bar{P_{\infty}}}{\bar{t}}\frac{\bar{r}}{2\sqrt{\pi\bar{c}\bar{t}}}e^{-\left(\frac{\bar{r}}{2\sqrt{\bar{c}\bar{t}}}\right)^2}}{\bar{\eta}\bar{v}+\alpha(1-\bar{P_{\infty}}\operatorname{erfc}(\frac{\bar{r}}{2\sqrt{\bar{c}\bar{t}}}))}d\bar{t} = \frac{d\bar{v}}{\bar{v}} \]} 
 \end{equation}
 
-\section{En rajoutant un angle $\phi$}
+\section{Avec un angle $\phi$ quelconque}
 L'équation (3) devient alors:
 
 \begin{equation}
