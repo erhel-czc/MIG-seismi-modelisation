@@ -2,6 +2,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import numpy.random
+from model2 import result1D as r
 
 #-------------------------------------------#
 # Computational parameter definition
@@ -283,6 +284,10 @@ for iter in range(0,pc.nitmax,1):
         Phi=np.reshape(Phi,(int(len(Phi)/(pc.n)),pc.n))
         Nu=np.reshape(Nu,(int(len(Nu)/(pc.n)),pc.n))
 
+
+sim = r.Result(T=T, V=np.exp(Phi), Nu=Nu, Phi=Phi, pd=pnd, pnd=pnd, pc=pc, filename='test_simulation.pkl')
+sim.save_results(folder_name='test')
+
 #-------------------------------------------#
 # Plot
 #-------------------------------------------#
@@ -291,7 +296,7 @@ plt.contour(x,T,np.log10(np.exp(Phi)),30)
 plt.contour(x,np.log10(T[1:pc.nitmax+1]),np.log10(np.exp(Phi[1:pc.nitmax+1])),30)
 plt.colorbar(orientation='vertical')
 plt.show()
-"""
+
 plt.plot(np.log10(np.max(T)-T[0:1000]),np.log10(np.exp(phimax[0:1000])),'-+k')
 plt.xlim([-5,-4.8])
 plt.plot(np.log10(T[1:pc.nitmax+1]),np.log10(np.exp(phimax[1:pc.nitmax+1])),'-+k')
@@ -310,3 +315,4 @@ plt.grid()
 # plt.plot(T,pnd.a*Phi+Nu,'-+k')
 plt.show()
 
+"""
