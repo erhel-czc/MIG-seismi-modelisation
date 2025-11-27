@@ -328,16 +328,15 @@ class Result:
         fft = fft[mask]
         freqs = freqs[mask]
 
-        plt.figure('FFT of v(t)')
-        plt.plot(freqs, np.abs(fft), '-k')
-        plt.xlabel('Frequency (Hz)')
-        plt.ylabel('Amplitude')
-        plt.title(r'FFT of v(t), cycle period T=%.2f, ($\kappa$=%.2f, $\alpha$=%.2f)' % (period, self.pnd.k, self.pnd.a))
-        plt.grid()
-
         
         if output:
             print(f"Dominant cycle period: {period} (ND) for k={self.pnd.k}, a={self.pnd.a}.")
+            plt.figure('FFT of v(t)')
+            plt.plot(freqs, np.abs(fft), '-k')
+            plt.xlabel('Frequency (Hz)')
+            plt.ylabel('Amplitude')
+            plt.title(r'FFT of v(t), cycle period T=%.2f, ($\kappa$=%.2f, $\alpha$=%.2f)' % (period, self.pnd.k, self.pnd.a))
+            plt.grid()
             plt.show()
 
         if save:
