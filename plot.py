@@ -17,3 +17,4 @@ if data.P.__class__ != NoneType:
 plt.show()
 
 data.magnitude() # Compute moment magnitude
+data.frequencies() # Compute frequencies of slip events
