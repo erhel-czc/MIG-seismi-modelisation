@@ -14,16 +14,18 @@ def dP_article(t,pd,pnd):
 # Linear pressure expression
 
 def P_linear(t, pd, pnd):
-    if t>=1e4:
-        return pd.Pinf
+    t_max = 1e-3
+    Pbarre = (pd.Pinf/pd.sigma_n0)
+    if t>=t_max:
+        return Pbarre
     else :
-        return (pd.Pinf/1e4)*t
+        return (Pbarre/t_max)*t+0.001
 
 def dP_linear(t, pd, pnd):
-    if t>=1e4:
-        return 0.0
+    if t>=1e-3:
+        return 0.001
     else :
-        return pd.Pinf/1e4
+        return pd.Pinf/(1e-3*pd.sigma_n0)
 
 # Constant pressure
 
