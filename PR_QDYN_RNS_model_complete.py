@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 import pickle
-from PR_QDYN_RNS import ParamMec, NdParamMec, ParamComp
+from PR_QDYN_RNS import ParamMec, NdParamMec, ParamComp # type: ignore
 from result import Result
 import pressure_expressions_sigma0
 
