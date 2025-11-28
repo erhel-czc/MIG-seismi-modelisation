@@ -348,6 +348,7 @@ if __name__ == "__main__": # to allow import without running the simulation
         Tau = np.array([f*sigma_n])
         Dphi=np.array([])
         Dnu=np.array([])
+        Delta=np.array([0.0])
 
         for iter in range(0,pc.nitmax,1):
             #--update phi, nu and h
@@ -365,6 +366,7 @@ if __name__ == "__main__": # to allow import without running the simulation
             Tau = np.append(Tau, [f*(sigma_n-P(t, pd, pnd))])
             Dphi=np.append(Dphi,[dphi])
             Dnu=np.append(Dnu,[dnu])
+            Delta=np.append(Delta,[Delta[-1]+np.exp(phi)*h])
 
 
         V=np.exp(Phi)
@@ -374,7 +376,7 @@ if __name__ == "__main__": # to allow import without running the simulation
         Pvalues = np.array([pd.sigma_n0*P(t,pd,pnd) for t in T])
 
         if i>0:
-            r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc, P=Pvalues, filename = f'Taux={taux:.2f}')
+            r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, Delta, pd, pnd, pc, P=Pvalues, filename = f'Taux={taux:.2f}')
         else:
-            r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc, filename = 'without_pressure')
+            r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, Delta, pd, pnd, pc, filename = 'without_pressure')
         r.save_results('taux_0_to_1')

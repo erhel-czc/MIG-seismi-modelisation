@@ -5,7 +5,7 @@ import numpy as np
 class Result:
     "Results storage"
 
-    def __init__(self, T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc, P=None, filename = ''):
+    def __init__(self, T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, Delta, pd, pnd, pc, P=None, filename = ''):
         self.T=T
         self.V=V
         self.Vpoint=Vpoint
@@ -14,6 +14,7 @@ class Result:
         self.Phipoint=Phipoint
         self.Tau=Tau
         self.Sigma_n=Sigma_n
+        self.Delta=Delta
         self.pd=pd
         self.pnd=pnd
         self.pc=pc
@@ -172,10 +173,37 @@ class Result:
         """
         plt.figure('Slip rate evolution')
 
-        plt.plot(self.T, self.Phi, '-k')
-        plt.xlabel('Time (ND)')
+        plt.plot(self.T*self.pd.dc/self.pd.V_p, self.Phi, '-k')
+        plt.xlabel('Time (s)')
         plt.ylabel('Log Slip rate (ND)')
         plt.title(r'Slip rate evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
+        plt.grid()
+
+        # plt.xlim([0, 100])
+        #plt.savefig('images/modif_parameters/slip_rate_k%.2f_a%.2f.pdf' % (self.pnd.k, self.pnd.a))
+        if save:
+            if name == '':
+                plt.savefig(f'{path}/slip_rate_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
+            else:
+                plt.savefig(f'{path}/slip_rate_{name}.pdf')
+    
+    def displacement_evolution(self, save=False, path='', name=''):
+        """
+        Plot the displacement evolution.
+
+        Parameters
+        ----------
+        save : bool
+            If True, save the figure in the given path.
+        path : str
+            The path where the figure will be saved.
+        """
+        plt.figure('Displacement evolution')
+
+        plt.plot(self.T*self.pd.dc/self.pd.V_p, self.Delta*self.pd.dc, '-k')
+        plt.xlabel('Time (s)')
+        plt.ylabel('Displacement (m)')
+        plt.title(r'Displacement evolution ($\kappa$=%.2f, $\alpha$=%.2f)' % (self.pnd.k, self.pnd.a))
         plt.grid()
 
         # plt.xlim([0, 100])
