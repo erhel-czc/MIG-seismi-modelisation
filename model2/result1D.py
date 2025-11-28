@@ -71,3 +71,19 @@ class Result:
             data = pickle.load(f)
 
         return data
+
+    def theta_evolution(self, save = False, path = '', name=''):
+        """Plot state variable evolution"""
+        plt.figure('Theta evolution')
+
+        plt.plot(self.T,self.Nu,'-k')
+        plt.xlabel('Time (ND)')
+        plt.ylabel('Log of state variable (ND)')
+        plt.title(r'$\theta$ evolution')
+        plt.grid()
+
+        if save:
+            if name != '':
+                plt.savefig(f"{path}/theta_evolution_{name}.png", dpi=300)
+            else:
+                plt.savefig(f"{path}/theta_evolution.png", dpi=300)

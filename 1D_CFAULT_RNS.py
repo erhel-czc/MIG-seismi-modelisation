@@ -303,14 +303,6 @@ plt.plot(np.log10(T[1:pc.nitmax+1]),np.log10(np.exp(phimax[1:pc.nitmax+1])),'-+k
 plt.plot(T,np.log10(np.exp(phimax)),'-+k')
 plt.show()
 
-plt.figure('Theta evolution')
-
-plt.plot(T,Nu,'-k')
-plt.xlabel('Time (ND)')
-plt.ylabel('Log of state variable (ND)')
-plt.title(r'$\theta$ evolution')
-plt.grid()
-
 # plt.figure('Phi evolution')
 # plt.plot(T,pnd.a*Phi+Nu,'-+k')
 plt.show()
