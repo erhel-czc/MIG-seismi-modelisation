@@ -369,9 +369,9 @@ if __name__ == "__main__":  # to allow import without running the simulation
         T = np.append(T, [t])
         Phi = np.append(Phi, [phi])
         Nu = np.append(Nu, [nu])
-        Sigma_n = np.append(Sigma_n, [sigma_n - P(t, pd, pnd)])
+        Sigma_n = np.append(Sigma_n, [sigma_n + sigma_te_y(t, pd, pnd) - P(t, pd, pnd)])
         F = np.append(F, [f_rns(phi, nu, pnd)])
-        Tau = np.append(Tau, [f * (sigma_n - P(t, pd, pnd))])
+        Tau = np.append(Tau, [f * (sigma_n + sigma_te_y(t, pd, pnd) - P(t, pd, pnd))])
         Dphi = np.append(Dphi, [dphi])
         Dnu = np.append(Dnu, [dnu])
 
