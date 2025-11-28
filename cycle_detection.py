@@ -2,10 +2,8 @@ from result import Result
 import numpy as np
 import matplotlib.pyplot as plt
 
-def find_cycle_start():
-    path = 'Results/PR_QDYN_RNS_modele_oriente/without_pressure'
-    data = Result.load_results(path)
-    taux=0.5
+def find_cycle_start(path_without_pressure, taux):
+    data = Result.load_results(path_without_pressure)
     nb_periode_pour_securite_debut=1
     nb_periode_pour_securite_fin=3
     charge=False
