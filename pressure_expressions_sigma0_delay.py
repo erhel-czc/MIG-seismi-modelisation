@@ -6,14 +6,14 @@ taux = 0
 path_without_pressure = "Results/PR_QDYN_RNS_modele_oriente/01"
 
 # Pressure expression from Journal of Geophysical Research: Solid Earth (P. Segall and S. Lu)
-def P_article(t,pd,pnd, delay = find_cycle_start(path_without_pressure, taux)):
+def P_article(t,pd,pnd, delay = 0):
     if t < delay:
         return 0.0
     else :
         P0barre = (pd.Pinf/pd.sigma_n0)
         return P0barre * math.erfc(pnd.r / (2*math.sqrt(pnd.c * (t-delay))))
 
-def dP_article(t,pd,pnd, delay = find_cycle_start(path_without_pressure, taux)):
+def dP_article(t,pd,pnd, delay = 0):
     P0barre = (pd.Pinf/pd.sigma_n0)
     if t < delay:
         return 0.0
