@@ -132,7 +132,7 @@ class Result:
         except :
             print(f"Magnitude calculation failed for {self.filename}.")
     
-    def frequencies(self, print_result=True):
+    def cycles(self, print_result=True):
         T=self.T
         Phi=self.Phi
         maxima=[]
@@ -154,9 +154,9 @@ class Result:
         
         if print_result :
             if len(periods)>0:
-                print(f"Periods: {periods*self.pd.dc/self.pd.V_p} in s for {self.filename}.")
+                print(f"Cycles: {periods*self.pd.dc/self.pd.V_p} in s for {self.filename}.")
             else:
-                print(f"No frequency detected for {self.filename}.")
+                print(f"No cycle detected for {self.filename}.")
 
 
     def slip_rate_evolution(self, save=False, path='', name=''):
