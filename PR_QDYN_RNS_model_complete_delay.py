@@ -1,5 +1,11 @@
+
 import numpy as np
+import matplotlib.pyplot as plt
+import math
+import pickle
+from PR_QDYN_RNS import ParamMec, NdParamMec, ParamComp # type: ignore
 from result import Result
+import pressure_expressions_sigma0_delay
 
 #####################################
 # Parameters
@@ -8,15 +14,25 @@ from result import Result
 #-------------------------------------#
 # Dimensional Mechanical parameter definition
 #-------------------------------------#
-shear=1.0E11    # shear modulus (Pa) 
+shear=2.0E10    # shear modulus (Pa)
 rho_roc=2700.0  # rock density (kg/m3)
 lenght_fault=1.0E3  # fault lenght (m)
-depth_fault=1.0E3   # fault depth (m)
-a_fric=0.005      # direct effect coefficient
+depth_fault=3.0E3   # fault depth (m)
+a_fric=0.005    # direct effect coefficient
 b_fric=0.01       # evolution effect coefficient
-dc=1.0E-4           # critical slip distance (m)
-V_p=1.0E-10        # tectonic speed (m/s)
+dc=1.0E-3           # critical slip distance (m)
+V_p=1.0E-7        # tectonic speed (m/s)
+r_real = 1.0e2      # distance to the injection point (m)
+c_real = 6.8e-4  # hydraulic diffusivity (m2/s)
+Pinf = 2.5e8     # injection pressure (Pa)
 
+
+#-------------------------------------#
+# ND Mechanical parameter definition
+#-------------------------------------#
+a= a_fric/b_fric
+eta=1.0E-11
+k=0.41
 
 #-------------------------------------------#
 # Computational parameter definition
@@ -31,14 +47,14 @@ safe=0.8      # safety factor for RKF iterations
 #-------------------------------------------#
 # Initial conditions (ND variables)
 #-------------------------------------------#
-v=2      # initial normalized slip rate
-th=1/v      # initial normalized state variable
-sigma_n=1  # initial normal stress (ND)
+v=1       # initial slip rate (ND)
+th=1/v      # initial state variable (ND)
+sigma_n=1.0  # initial normal stress (ND)
 
-t=0.0       # initial time
+t=0.001       # initial time (ND)
 h=0.001     # initial time step
 
-psi=0.7
+psi=np.pi/3 # fault angle (radians)
 f0=0.6
 
 phi=np.log(v)
@@ -47,7 +63,7 @@ nu=np.log(th)
 class ParamMec:
     "Dimensional Mechanical parameters"
 
-    def __init__(self, shear, rho_rock, lenght_fault, depth_fault, a_fric, b_fric, dc, V_p):
+    def __init__(self, shear, rho_rock, lenght_fault, depth_fault, a_fric, b_fric, dc, V_p, r_real, c_real, Pinf):
         self.shear=shear
         self.rho_rock=rho_rock
         self.lenght_fault=lenght_fault
@@ -56,6 +72,9 @@ class ParamMec:
         self.b_fric=b_fric        
         self.dc=dc
         self.V_p=V_p
+        self.r_real=r_real
+        self.c_real=c_real  
+        self.Pinf=Pinf
         self.sigma_n0=rho_rock*9.81*depth_fault  # lithospheric stress
         self.k_rigidity= shear/lenght_fault  # rigidity
         self.eta_visc= np.sqrt(shear*rho_rock)/2. # viscosity
@@ -65,13 +84,15 @@ class ParamMec:
 class NdParamMec:
     "Non dimensional Mechanical parameters"
 
-    def __init__(self, a, eta, k, psi, f0, b):
+    def __init__(self, a, eta, k, psi, f0, b, r, c):
         self.a=a
         self.eta=eta
         self.k=k
         self.psi=psi
         self.f0=f0
         self.b=b
+        self.r=r
+        self.c=c
 
 class ParamComp:
     "Computational parameters"
@@ -91,13 +112,13 @@ class ParamComp:
 # Dimensional Mechanical parameter definition
 #-------------------------------------#
 
-pd = ParamMec(shear=shear, rho_rock=rho_roc, lenght_fault=lenght_fault, depth_fault=depth_fault, a_fric=a_fric, b_fric=b_fric, dc=dc, V_p=V_p)
+pd = ParamMec(shear=shear, rho_rock=rho_roc, lenght_fault=lenght_fault, depth_fault=depth_fault, a_fric=a_fric, b_fric=b_fric, dc=dc, V_p=V_p, r_real=r_real, c_real=c_real, Pinf=Pinf)
 
 #-------------------------------------#
 # ND Mechanical parameter definition
 #-------------------------------------#
 
-pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n0*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n0), psi=psi, f0=f0, b=pd.b_fric)
+pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n0*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n0), psi=psi, f0=f0, b=pd.b_fric, r=(pd.r_real*pd.b_fric*pd.sigma_n0) / (pd.shear*pd.dc), c=pd.c_real * (pd.b_fric**2 * pd.sigma_n0**2)/(pd.V_p * pd.shear**2 * pd.dc))
 
 f=pnd.f0 + pnd.a*pnd.b*np.log(v) + pnd.b*np.log(th)  # initial frictional resistance (ND)
 
@@ -110,15 +131,50 @@ spsi=np.sin(pnd.psi)
 pc = ParamComp(tol, nitrkmax, nitmax, hmin, hmax, safe)
 
 
+pressions_dict = {}
+
+for name in dir(pressure_expressions_sigma0_delay):
+    if name.startswith("P") and not name.startswith("dP"):
+
+        # extract model name
+        if "_" in name:
+            model = name.split("_", 1)[1]  # ex : P_linear -> linear
+        else:
+            model = ""
+
+        P_func = getattr(pressure_expressions_sigma0_delay, name)
+
+        # associated derivative name
+        dP_name = "d" + name  # ex : P_linear -> dP_linear
+
+        if hasattr(pressure_expressions_sigma0_delay, dP_name):
+            dP_func = getattr(pressure_expressions_sigma0_delay, dP_name)
+            pressions_dict[model] = {"P": P_func, "dP": dP_func}
+        else:
+            raise ValueError(f"Error : derivative function '{dP_name}' doesn't exist for model '{name}'. ")
+
+
+# user choice
+
+print("Modèles de pression disponibles :", list(pressions_dict.keys()))
+choix = input("Votre choix (laisser vide pour modèle principal) : ")
+
+if choix not in pressions_dict:
+    raise ValueError(f"Modèle inconnu : {choix}")
+
+P = pressions_dict[choix]["P"]
+dP = pressions_dict[choix]["dP"]
+
+
 
 def f_rns(phi, nu, pnd):
 
     return pnd.f0 + pnd.a*pnd.b*phi + pnd.b*nu
 
-def phi_rns(phi, nu, sigma_n, pnd):
+def phi_rns(t, phi, nu, sigma_n, pnd):
 
-    F=pnd.k*(1 - spsi*np.exp(phi))*(spsi + cpsi*f_rns(phi, nu, pnd)) + sigma_n*(np.exp(phi)-np.exp(-nu))
-    F=F/(pnd.a*sigma_n + pnd.eta*np.exp(phi))
+    F=pnd.k*(1 - spsi*np.exp(phi))*spsi - (np.exp(-nu)-np.exp(phi))*(sigma_n - P(t, pd, pnd)) + f_rns(phi,nu,pnd)*(pnd.k*(1 - spsi*np.exp(phi))*cpsi - dP(t, pd, pnd))
+    F=F/(pnd.a*(sigma_n - P(t, pd, pnd)) + pnd.eta*np.exp(phi))
 
     return F
 
@@ -134,7 +190,7 @@ def sigma_rns(phi, pnd):
 
     return F
 
-def rkf(phi,nu, sigma_n, f, h, pnd, pc):
+def rkf(t, phi, nu, sigma_n, f, h, pnd, pc):
     
 
     c21=1/4
@@ -178,7 +234,7 @@ def rkf(phi,nu, sigma_n, f, h, pnd, pc):
         # the 4th order RK estimate.
             
         
-        k1 = h * phi_rns(phi,nu,sigma_n,pnd)
+        k1 = h * phi_rns(t,phi,nu,sigma_n,pnd)
         l1 = h * th_rns(phi,nu)
         m1 = h * sigma_rns(phi,pnd)
 
@@ -187,7 +243,7 @@ def rkf(phi,nu, sigma_n, f, h, pnd, pc):
         dnu = c21*l1
         dsigma = c21*m1
         
-        k2 = h * phi_rns(phi+dphi,nu+dnu,sigma_n+dsigma,pnd)
+        k2 = h * phi_rns(t, phi+dphi,nu+dnu,sigma_n+dsigma,pnd)
         l2 = h * th_rns(phi+dphi,nu+dnu)
         m2 = h * sigma_rns(phi+dphi,pnd)
 
@@ -195,7 +251,7 @@ def rkf(phi,nu, sigma_n, f, h, pnd, pc):
         dnu = c31*l1 + c32*l2
         dsigma = c31*m1 + c32*m2
 
-        k3 = h * phi_rns(phi+dphi,nu+dnu,sigma_n+dsigma,pnd)
+        k3 = h * phi_rns(t, phi+dphi,nu+dnu,sigma_n+dsigma,pnd)
         l3 = h * th_rns(phi+dphi,nu+dnu)
         m3 = h * sigma_rns(phi+dphi,pnd)
 
@@ -203,7 +259,7 @@ def rkf(phi,nu, sigma_n, f, h, pnd, pc):
         dnu = c41*l1 + c42*l2 + c43*l3
         dsigma = c41*m1 + c42*m2 + c43*m3
 
-        k4 = h * phi_rns(phi+dphi,nu+dnu,sigma_n+dsigma,pnd)
+        k4 = h * phi_rns(t, phi+dphi,nu+dnu,sigma_n+dsigma,pnd)
         l4 = h * th_rns(phi+dphi,nu+dnu)
         m4 = h * sigma_rns(phi+dphi,pnd)
 
@@ -211,7 +267,7 @@ def rkf(phi,nu, sigma_n, f, h, pnd, pc):
         dnu = c51*l1 + c52*l2 + c53*l3 + c54*l4
         dsigma = c51*m1 + c52*m2 + c53*m3 + c54*m4
 
-        k5 = h * phi_rns(phi+dphi,nu+dnu,sigma_n+dsigma,pnd)
+        k5 = h * phi_rns(t, phi+dphi,nu+dnu,sigma_n+dsigma,pnd)
         l5 = h * th_rns(phi+dphi,nu+dnu)
         m5 = h * sigma_rns(phi+dphi,pnd)
 
@@ -219,7 +275,7 @@ def rkf(phi,nu, sigma_n, f, h, pnd, pc):
         dnu = c61*l1 + c62*l2 + c63*l3 + c64*l4 + c65*l5
         dsigma = c61*m1 + c62*m2 + c63*m3 + c64*m4 + c65*m5
 
-        k6 = h * phi_rns(phi+dphi,nu+dnu,sigma_n+dsigma,pnd)
+        k6 = h * phi_rns(t, phi+dphi,nu+dnu,sigma_n+dsigma,pnd)
         l6 = h * th_rns(phi+dphi,nu+dnu)
         m6 = h * sigma_rns(phi+dphi,pnd)
 
@@ -263,7 +319,7 @@ if __name__ == "__main__": # to allow import without running the simulation
 
     for iter in range(0,pc.nitmax,1):
         #--update phi, nu and h
-        phi, nu, sigma_n, dphi, dnu, dsigma, h = rkf(phi, nu, sigma_n, f, h, pnd, pc)
+        phi, nu, sigma_n, dphi, dnu, dsigma, h = rkf(t, phi, nu, sigma_n, f, h, pnd, pc)
 
         #--update time
         t+=h
@@ -272,9 +328,9 @@ if __name__ == "__main__": # to allow import without running the simulation
         T=np.append(T,[t])
         Phi=np.append(Phi,[phi])
         Nu=np.append(Nu,[nu])
-        Sigma_n=np.append(Sigma_n,[sigma_n])
+        Sigma_n=np.append(Sigma_n,[sigma_n-P(t, pd, pnd)])
         F=np.append(F,[f_rns(phi,nu,pnd)])
-        Tau = np.append(Tau, [f*sigma_n])
+        Tau = np.append(Tau, [f*(sigma_n-P(t, pd, pnd))])
         Dphi=np.append(Dphi,[dphi])
         Dnu=np.append(Dnu,[dnu])
 
@@ -283,9 +339,9 @@ if __name__ == "__main__": # to allow import without running the simulation
     Dt=np.diff(T)
     Phipoint=Dphi/Dt
     Vpoint=V[1:]*Phipoint
-    
+    Pvalues = np.array([pd.sigma_n0*P(t,pd,pnd) for t in T])
 
 
     # save results
-    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc, filename = '01') # add filename if needed (filename = "custom_name.pkl")
-    r.save_results("PR_QDYN_RNS_modele_oriente")
+    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc, P=Pvalues, filename = 'with_pressure_delay') # add filename if needed (filename = "custom_name.pkl")
+    r.save_results('PR_QDYN_RNS_modele_oriente')

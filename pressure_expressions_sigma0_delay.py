@@ -1,15 +1,21 @@
 import math
 import numpy as np
-
+from cycle_detection import find_cycle_start
 
 # Pressure expression from Journal of Geophysical Research: Solid Earth (P. Segall and S. Lu)
-def P_article(t,pd,pnd):
-    P0barre = (pd.Pinf/pd.sigma_n0)
-    return P0barre * math.erfc(pnd.r / (2*math.sqrt(pnd.c * t)))
+def P_article(t,pd,pnd, delay = find_cycle_start()):
+    if t < delay:
+        return 0.0
+    else :
+        P0barre = (pd.Pinf/pd.sigma_n0)
+        return P0barre * math.erfc(pnd.r / (2*math.sqrt(pnd.c * (t-delay+0.01))))
 
-def dP_article(t,pd,pnd):
+def dP_article(t,pd,pnd, delay = find_cycle_start()):
     P0barre = (pd.Pinf/pd.sigma_n0)
-    return (P0barre / (2*t*math.sqrt(np.pi))) * (pnd.r / math.sqrt(pnd.c*t)) * np.exp(-(pnd.r/(2*math.sqrt(pnd.c*t)))**2)
+    if t < delay:
+        return 0.0
+    else :
+        return (P0barre / (2*t*math.sqrt(np.pi))) * (pnd.r / math.sqrt(pnd.c*(t-delay)) * np.exp(-(pnd.r/(2*math.sqrt(pnd.c*(t-delay))))**2))
 
 # Linear pressure expression
 
