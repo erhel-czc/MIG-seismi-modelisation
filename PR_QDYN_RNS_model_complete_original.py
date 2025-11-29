@@ -24,7 +24,7 @@ dc=1.0E-3           # critical slip distance (m)
 V_p=1.0E-7        # tectonic speed (m/s)
 r_real = 1.0e2 # distance to the injection point (m)
 c_real = 6.8e-4  # hydraulic diffusivity (m2/s)
-Pinf = 2.5e8     # injection pressure (Pa)
+Pinf = 2.5e9     # injection pressure (Pa)
 
 
 #-------------------------------------#

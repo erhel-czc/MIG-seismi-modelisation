@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 
 def find_cycle_start(path_without_pressure, taux):
     data = Result.load_results(path_without_pressure)
-    nb_periode_pour_securite_debut=1
-    nb_periode_pour_securite_fin=3
-    charge=False
+    nb_periode_pour_securite_debut=3
+    nb_periode_pour_securite_fin=1
+    charge=True
 
     signal = np.array(data.Phi)
     time = data.T
@@ -44,10 +44,10 @@ def find_cycle_start(path_without_pressure, taux):
         indice_debut_injection=(np.abs((signal_tronque[+1:]-threshhold))).argmin()
         indice_debut_injection+=decalage_debut+1
 
-    plt.figure(2)
-    plt.plot(time,signal,color='k')
-    plt.scatter(time[indice_debut_injection],signal[indice_debut_injection],marker='+',s=100)
-    plt.grid()
+    #plt.figure(2)
+    #plt.plot(time,signal,color='k')
+    #plt.scatter(time[indice_debut_injection],signal[indice_debut_injection],marker='+',s=100)
+    #plt.grid()
    #plt.show()
 
     return (time[indice_debut_injection]+time[indice_debut_injection-1])/2

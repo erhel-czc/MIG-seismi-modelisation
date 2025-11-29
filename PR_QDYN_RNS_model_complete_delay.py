@@ -21,10 +21,10 @@ depth_fault=3.0E3   # fault depth (m)
 a_fric=0.005    # direct effect coefficient
 b_fric=0.01       # evolution effect coefficient
 dc=1.0E-3           # critical slip distance (m)
-V_p=1.0E-7        # tectonic speed (m/s)
+V_p=1.0E-9        # tectonic speed (m/s)
 r_real = 1.0e2      # distance to the injection point (m)
 c_real = 6.8e-4  # hydraulic diffusivity (m2/s)
-Pinf = 2.5e8     # injection pressure (Pa)
+Pinf = 2.5e7     # injection pressure (Pa)
 
 
 #-------------------------------------#
@@ -317,14 +317,14 @@ if __name__ == "__main__": # to allow import without running the simulation
     P = pressions_dict[choix]["P"]
     dP = pressions_dict[choix]["dP"]
 
-    N_taux = 11
+    N_taux = 2
     taux_l = np.concatenate((np.array([0]), np.linspace(0, 1, N_taux)))
 
     for i in range(N_taux+1):
         taux = taux_l[i]
 
         if i==1:
-            path_without_pressure = '/Users/rico/Desktop/Mines/MIG/Semaine 2/MIG-seismi-modelisation/Results/taux_0_to_1/without_pressure'
+            path_without_pressure = 'Results/taux_0_to_1/without_pressure'
             choix = 'article'
             P = pressions_dict[choix]["P"]
             dP = pressions_dict[choix]["dP"]
@@ -368,7 +368,6 @@ if __name__ == "__main__": # to allow import without running the simulation
             Dnu=np.append(Dnu,[dnu])
             Delta=np.append(Delta,[Delta[-1]+np.exp(phi)*h])
 
-
         V=np.exp(Phi)
         Dt=np.diff(T)
         Phipoint=Dphi/Dt
@@ -379,4 +378,5 @@ if __name__ == "__main__": # to allow import without running the simulation
             r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, Delta, pd, pnd, pc, P=Pvalues, filename = f'Taux={taux:.2f}')
         else:
             r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, Delta, pd, pnd, pc, filename = 'without_pressure')
+
         r.save_results('taux_0_to_1')
