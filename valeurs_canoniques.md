@@ -25,7 +25,8 @@ psi=0.7
 f0=0.6
 ```
 
-### BEST
+## Best values
+```
 shear=2.0E10    # shear modulus (Pa)
 rho_roc=2700.0  # rock density (kg/m3)
 lenght_fault=1.0E3  # fault lenght (m)
@@ -37,3 +38,4 @@ V_p=1.0E-7        # tectonic speed (m/s)
 r_real = 1.0e2 # distance to the injection point (m)
 c_real = 6.8e-4  # hydraulic diffusivity (m2/s)
 Pinf = 2.5e8     # injection pressure (Pa)
+```
