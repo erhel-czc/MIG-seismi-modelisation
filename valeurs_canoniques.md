@@ -26,7 +26,7 @@ f0=0.6
 ```
 
 ## Best values
-```
+```python
 shear=2.0E10    # shear modulus (Pa)
 rho_roc=2700.0  # rock density (kg/m3)
 lenght_fault=1.0E3  # fault lenght (m)
