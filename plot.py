@@ -3,7 +3,7 @@ from types import NoneType
 from result import Result
 import matplotlib.pyplot as plt
 
-path = 'Results/taux_0_to_1/Taux=0.50'
+path = 'Results/taux_0_to_1/Taux=0.00'
 data = Result.load_results(path)
 data.slip_rate_evolution(save = False, path = 'images/complete/', name='article') # Plot slip rate evolution58479002277847_1.0.pkl") # Load previously saved results in the Res
 data.displacement_evolution(save = False, path = 'images/complete/', name='article') # Plot displacement evolution

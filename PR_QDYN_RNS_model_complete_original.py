@@ -5,7 +5,7 @@ import math
 import pickle
 from PR_QDYN_RNS import ParamMec, NdParamMec, ParamComp # type: ignore
 from result import Result
-import pressure_expressions_sigma0
+import pressure_expressions_sigma0_delay
 
 #####################################
 # Parameters
@@ -24,7 +24,7 @@ dc=1.0E-3           # critical slip distance (m)
 V_p=1.0E-7        # tectonic speed (m/s)
 r_real = 1.0e2 # distance to the injection point (m)
 c_real = 6.8e-4  # hydraulic diffusivity (m2/s)
-Pinf = 2.5e8     # injection pressure (Pa)
+Pinf = 2.5e9     # injection pressure (Pa)
 
 
 #-------------------------------------#
@@ -133,7 +133,7 @@ pc = ParamComp(tol, nitrkmax, nitmax, hmin, hmax, safe)
 
 pressions_dict = {}
 
-for name in dir(pressure_expressions_sigma0):
+for name in dir(pressure_expressions_sigma0_delay):
     if name.startswith("P") and not name.startswith("dP"):
 
         # extract model name
@@ -142,13 +142,13 @@ for name in dir(pressure_expressions_sigma0):
         else:
             model = ""
 
-        P_func = getattr(pressure_expressions_sigma0, name)
+        P_func = getattr(pressure_expressions_sigma0_delay, name)
 
         # associated derivative name
         dP_name = "d" + name  # ex : P_linear -> dP_linear
 
-        if hasattr(pressure_expressions_sigma0, dP_name):
-            dP_func = getattr(pressure_expressions_sigma0, dP_name)
+        if hasattr(pressure_expressions_sigma0_delay, dP_name):
+            dP_func = getattr(pressure_expressions_sigma0_delay, dP_name)
             pressions_dict[model] = {"P": P_func, "dP": dP_func}
         else:
             raise ValueError(f"Error : derivative function '{dP_name}' doesn't exist for model '{name}'. ")
@@ -343,5 +343,5 @@ if __name__ == "__main__": # to allow import without running the simulation
 
 
     # save results
-    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc, P=Pvalues, filename = '01') # add filename if needed (filename = "custom_name.pkl")
-    r.save_results('PR_QDYN_RNS_modele_oriente')
+    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc, P=Pvalues, filename = 'without_pressure') # add filename if needed (filename = "custom_name.pkl")
+    r.save_results('taux_0_to_1')
