@@ -357,6 +357,7 @@ if __name__ == "__main__":  # to allow import without running the simulation
     Tau = np.array([f * sigma_n])
     Dphi = np.array([])
     Dnu = np.array([])
+    Delta = np.array([0.0])
 
     for iter in range(0, pc.nitmax, 1):
         # --update phi, nu and h
@@ -374,6 +375,7 @@ if __name__ == "__main__":  # to allow import without running the simulation
         Tau = np.append(Tau, [f * (sigma_n - P(t, pd, pnd))])
         Dphi = np.append(Dphi, [dphi])
         Dnu = np.append(Dnu, [dnu])
+        Delta = np.append(Delta, [Delta[-1] + np.exp(phi) * h])
 
     V = np.exp(Phi)
     Dt = np.diff(T)
@@ -382,6 +384,6 @@ if __name__ == "__main__":  # to allow import without running the simulation
     Pvalues = np.array([pd.sigma_n0 * P(t, pd, pnd) for t in T])
 
     # save results
-    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc, P=Pvalues,
+    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, Delta, pd, pnd, pc, P=Pvalues,
                filename='with_pressure_delay2')  # add filename if needed (filename = "custom_name.pkl")
     r.save_results('PR_QDYN_RNS_modele_oriente')

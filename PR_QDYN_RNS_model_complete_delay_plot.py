@@ -335,7 +335,7 @@ if __name__ == "__main__":  # to allow import without running the simulation
     dP = pressions_dict[choix]["dP"]
 
     N_taux = 5
-    taux_l = np.concatenate((np.array([0]), np.linspace(0, 0.6, N_taux)))
+    taux_l = np.concatenate((np.array([0]), np.linspace(0, 0.5, N_taux)))
 
     for i in range(N_taux + 1):
         if i == 1:
