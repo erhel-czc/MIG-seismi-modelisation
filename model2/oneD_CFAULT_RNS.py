@@ -250,43 +250,44 @@ def rkf(phi,nu,h,pnd,pc):
 #-------------------------------------------#
 # Iterations
 #-------------------------------------------#
-T=np.array([t])
-Phi=np.array([phi])
-Nu=np.array([nu])
-phimax=np.array([np.max(phi)])
-
-phiref=np.max(phi)
-
-for iter in range(0,pc.nitmax,1):
+if __name__ == "__main__":
+    T=np.array([t])
+    Phi=np.array([phi])
+    Nu=np.array([nu])
+    phimax=np.array([np.max(phi)])
     
-    #--counter
-    if iter%100 == 0:
-        print("iteration ",iter," max iteration: ",pc.nitmax," time (nd): ",t," slip rate (nd): ",np.exp(np.max(phi)))
+    phiref=np.max(phi)
     
-    #--update phi, nu and h
-    phi,nu,h = rkf(phi,nu,h,pnd,pc)
-    
-    #--update time
-    t+=h
-
-    #--plot & store results
-    if np.abs(np.max(phi)-phiref)>1:
-        #--plot profiles
-        phiref=np.max(phi)
-        #plt.plot(x,phi)
+    for iter in range(0,pc.nitmax,1):
         
-        #--store
-        T=np.append(T,[t])
-        Phi=np.append(Phi,phi)
-        Nu=np.append(Nu,nu)
-        phimax=np.append(phimax,[np.max(phi)])
+        #--counter
+        if iter%100 == 0:
+            print("iteration ",iter," max iteration: ",pc.nitmax," time (nd): ",t," slip rate (nd): ",np.exp(np.max(phi)))
         
-        Phi=np.reshape(Phi,(int(len(Phi)/(pc.n)),pc.n))
-        Nu=np.reshape(Nu,(int(len(Nu)/(pc.n)),pc.n))
-
-
-sim = r.Result1D(T=T, V=np.exp(Phi), Nu=Nu, Phi=Phi, pd=pnd, pnd=pnd, pc=pc, filename='test_simulation.pkl')
-sim.save_results(folder_name='test')
+        #--update phi, nu and h
+        phi,nu,h = rkf(phi,nu,h,pnd,pc)
+        
+        #--update time
+        t+=h
+    
+        #--plot & store results
+        if np.abs(np.max(phi)-phiref)>1:
+            #--plot profiles
+            phiref=np.max(phi)
+            #plt.plot(x,phi)
+            
+            #--store
+            T=np.append(T,[t])
+            Phi=np.append(Phi,phi)
+            Nu=np.append(Nu,nu)
+            phimax=np.append(phimax,[np.max(phi)])
+            
+            Phi=np.reshape(Phi,(int(len(Phi)/(pc.n)),pc.n))
+            Nu=np.reshape(Nu,(int(len(Nu)/(pc.n)),pc.n))
+    
+    
+    sim = r.Result1D(T=T, V=np.exp(Phi), Nu=Nu, Phi=Phi, pd=pnd, pnd=pnd, pc=pc, filename='test_simulation.pkl')
+    sim.save_results(folder_name='test')
 
 #-------------------------------------------#
 # Plot
