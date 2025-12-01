@@ -156,6 +156,7 @@ class Result:
         if print_result :
             if len(periods)>0:
                 print(f"Cycles: {periods*self.pd.dc/self.pd.V_p} in s for {self.filename}.")
+                return(periods)
             else:
                 print(f"No cycle detected for {self.filename}.")
 
