@@ -5,7 +5,7 @@ import math
 import pickle
 from PR_QDYN_RNS import ParamMec, NdParamMec, ParamComp # type: ignore
 from result import Result
-#import pressure_expressions_sigma0_delay# 
+import pressure_expressions_qt
 
 #####################################
 # Parameters
@@ -24,7 +24,13 @@ dc=1.0E-3           # critical slip distance (m)
 V_p=1.0E-9        # tectonic speed (m/s)
 r_real = 1.0e2      # distance to the injection point (m)
 c_real = 6.8e-4  # hydraulic diffusivity (m2/s)
-Pinf = 2.5e7     # injection pressure (Pa)
+
+Pinf = 2.5e7     # injection pressure (Pa) #depending on q(t)
+eta_visc = 0.4e-3   # viscosity
+fluid_density = 10**3   #fluid density
+k_perm = 3e-16  # permeability
+
+q0 = 10
 
 
 #-------------------------------------#
@@ -63,13 +69,13 @@ nu=np.log(th)
 class ParamMec:
     "Dimensional Mechanical parameters"
 
-    def __init__(self, shear, rho_rock, lenght_fault, depth_fault, a_fric, b_fric, dc, V_p, r_real, c_real, Pinf):
+    def __init__(self, shear, rho_rock, lenght_fault, depth_fault, a_fric, b_fric, dc, V_p, r_real, c_real, Pinf, eta_visc, fluid_density, k_perm, q0):
         self.shear=shear
         self.rho_rock=rho_rock
         self.lenght_fault=lenght_fault
         self.depth_fault=depth_fault
         self.a_fric=a_fric
-        self.b_fric=b_fric        
+        self.b_fric=b_fric
         self.dc=dc
         self.V_p=V_p
         self.r_real=r_real
@@ -77,10 +83,13 @@ class ParamMec:
         self.Pinf=Pinf
         self.sigma_n0=rho_rock*9.81*depth_fault  # lithospheric stress
         self.k_rigidity= shear/lenght_fault  # rigidity
-        self.eta_visc= np.sqrt(shear*rho_rock)/2. # viscosity
+        self.rad_damping= np.sqrt(shear*rho_rock)/2 # viscosity
+        self.eta_visc = eta_visc
+        self.fluid_density = fluid_density
+        self.k_perm = k_perm
+        self.q0 = q0
 
         
-
 class NdParamMec:
     "Non dimensional Mechanical parameters"
 
@@ -112,13 +121,13 @@ class ParamComp:
 # Dimensional Mechanical parameter definition
 #-------------------------------------#
 
-pd = ParamMec(shear=shear, rho_rock=rho_roc, lenght_fault=lenght_fault, depth_fault=depth_fault, a_fric=a_fric, b_fric=b_fric, dc=dc, V_p=V_p, r_real=r_real, c_real=c_real, Pinf=Pinf)
+pd = ParamMec(shear=shear, rho_rock=rho_roc, lenght_fault=lenght_fault, depth_fault=depth_fault, a_fric=a_fric, b_fric=b_fric, dc=dc, V_p=V_p, r_real=r_real, c_real=c_real, Pinf=Pinf, eta_visc=eta_visc, fluid_density=fluid_density, k_perm=k_perm, q0=q0)
 
 #-------------------------------------#
 # ND Mechanical parameter definition
 #-------------------------------------#
 
-pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n0*pd.b_fric), eta = pd.eta_visc*pd.V_p/(pd.b_fric*pd.sigma_n0), psi=psi, f0=f0, b=pd.b_fric, r=(pd.r_real*pd.b_fric*pd.sigma_n0) / (pd.shear*pd.dc), c=pd.c_real * (pd.b_fric**2 * pd.sigma_n0**2)/(pd.V_p * pd.shear**2 * pd.dc))
+pnd=NdParamMec(a = pd.a_fric/pd.b_fric, k = pd.k_rigidity*pd.dc/(pd.sigma_n0*pd.b_fric), eta = pd.rad_damping*pd.V_p/(pd.b_fric*pd.sigma_n0), psi=psi, f0=f0, b=pd.b_fric, r=(pd.r_real*pd.b_fric*pd.sigma_n0) / (pd.shear*pd.dc), c=pd.c_real * (pd.b_fric**2 * pd.sigma_n0**2)/(pd.V_p * pd.shear**2 * pd.dc))
 
 f=pnd.f0 + pnd.a*pnd.b*np.log(v) + pnd.b*np.log(th)  # initial frictional resistance (ND)
 
@@ -133,7 +142,7 @@ pc = ParamComp(tol, nitrkmax, nitmax, hmin, hmax, safe)
 
 pressions_dict = {}
 
-for name in dir(pressure_expressions_sigma0_delay):
+for name in dir(pressure_expressions_qt):
     if name.startswith("P") and not name.startswith("dP"):
 
         # extract model name
@@ -142,13 +151,13 @@ for name in dir(pressure_expressions_sigma0_delay):
         else:
             model = ""
 
-        P_func = getattr(pressure_expressions_sigma0_delay, name)
+        P_func = getattr(pressure_expressions_qt, name)
 
         # associated derivative name
         dP_name = "d" + name  # ex : P_linear -> dP_linear
 
-        if hasattr(pressure_expressions_sigma0_delay, dP_name):
-            dP_func = getattr(pressure_expressions_sigma0_delay, dP_name)
+        if hasattr(pressure_expressions_qt, dP_name):
+            dP_func = getattr(pressure_expressions_qt, dP_name)
             pressions_dict[model] = {"P": P_func, "dP": dP_func}
         else:
             raise ValueError(f"Error : derivative function '{dP_name}' doesn't exist for model '{name}'. ")
@@ -169,6 +178,30 @@ taux=0
 #dP = pressions_dict[choix]["dP"]
 
 
+periods = [0,0]
+
+def P_and_dP(t, periods, pd, pnd):
+    q=q0
+    Pressure = 0
+    dPressure = 0
+    period = periods[1]
+    for i in range(10):
+        if i*period <= t <(i+1)*period:
+            q=i*pd.q0
+            Pressure_function = pressions_dict[choix]["P"]
+            dPressure_function = pressions_dict[choix]["dP"]
+            Pressure = Pressure_function(t-i*period, q, pd, pnd) + Pressure_function(i*period+0.01, q, pd, pnd)
+            dPressure = dPressure_function(t-i*period, q, pd, pnd) + dPressure_function(i*period+0.01, q, pd, pnd)
+
+    return Pressure, dPressure, q
+
+def P(t, periods, pd, pnd):
+    return P_and_dP(t, periods, pd, pnd)[0]
+def dP(t, periods, pd, pnd):
+    return P_and_dP(t, periods, pd, pnd)[1]
+def q(t, periods, pd, pnd):
+    return P_and_dP(t, periods, pd, pnd)[2]
+
 
 def f_rns(phi, nu, pnd):
 
@@ -176,8 +209,8 @@ def f_rns(phi, nu, pnd):
 
 def phi_rns(t, phi, nu, sigma_n, pnd):
 
-    F=pnd.k*(1 - spsi*np.exp(phi))*spsi - (np.exp(-nu)-np.exp(phi))*(sigma_n - P(t, pd, pnd)) + f_rns(phi,nu,pnd)*(pnd.k*(1 - spsi*np.exp(phi))*cpsi - dP(t, pd, pnd))
-    F=F/(pnd.a*(sigma_n - P(t, pd, pnd)) + pnd.eta*np.exp(phi))
+    F=pnd.k*(1 - spsi*np.exp(phi))*spsi - (np.exp(-nu)-np.exp(phi))*(sigma_n - P(t, periods, pd, pnd)) + f_rns(phi,nu,pnd)*(pnd.k*(1 - spsi*np.exp(phi))*cpsi - dP(t, periods, pd, pnd))
+    F=F/(pnd.a*(sigma_n - P(t, periods, pd, pnd)) + pnd.eta*np.exp(phi))
 
     return F
 
@@ -314,8 +347,6 @@ def rkf(t, phi, nu, sigma_n, f, h, pnd, pc):
 if __name__ == "__main__": # to allow import without running the simulation
 
     choix='none'
-    P = pressions_dict[choix]["P"]
-    dP = pressions_dict[choix]["dP"]
 
     N_taux = 2
     taux_l = np.concatenate((np.array([0]), np.linspace(0, 1, N_taux)))
@@ -324,10 +355,9 @@ if __name__ == "__main__": # to allow import without running the simulation
         taux = taux_l[i]
 
         if i==1:
-            path_without_pressure = 'Results/taux_0_to_1/without_pressure'
+            path_without_pressure = 'Results/qt/without_pressure'
             choix = 'article'
-            P = pressions_dict[choix]["P"]
-            dP = pressions_dict[choix]["dP"]
+            periods = r.cycles()
 
         v=1       # initial slip rate (ND)
         th=1/v      # initial state variable (ND)
@@ -361,9 +391,9 @@ if __name__ == "__main__": # to allow import without running the simulation
             T=np.append(T,[t])
             Phi=np.append(Phi,[phi])
             Nu=np.append(Nu,[nu])
-            Sigma_n=np.append(Sigma_n,[sigma_n-P(t, pd, pnd)])
+            Sigma_n=np.append(Sigma_n,[sigma_n-P(t, periods, pd, pnd)])
             F=np.append(F,[f_rns(phi,nu,pnd)])
-            Tau = np.append(Tau, [f*(sigma_n-P(t, pd, pnd))])
+            Tau = np.append(Tau, [f*(sigma_n-P(t, periods, pd, pnd))])
             Dphi=np.append(Dphi,[dphi])
             Dnu=np.append(Dnu,[dnu])
             Delta=np.append(Delta,[Delta[-1]+np.exp(phi)*h])
@@ -372,11 +402,12 @@ if __name__ == "__main__": # to allow import without running the simulation
         Dt=np.diff(T)
         Phipoint=Dphi/Dt
         Vpoint=V[1:]*Phipoint
-        Pvalues = np.array([pd.sigma_n0*P(t,pd,pnd) for t in T])
+        qvalues = np.array([q(t,periods, pd, pnd) for t in T])
+        Pvalues = np.array([pd.sigma_n0*P(t, periods, pd, pnd) for t in T])
 
         if i>0:
-            r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, Delta, pd, pnd, pc, P=Pvalues, filename = f'Taux={taux:.2f}')
+            r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, Delta, pd, pnd, pc, P=Pvalues, q=qvalues, filename = 'with_qt')
         else:
             r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, Delta, pd, pnd, pc, filename = 'without_pressure')
 
-        r.save_results('taux_0_to_1')
+        r.save_results('qt')
