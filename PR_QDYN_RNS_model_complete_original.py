@@ -11,51 +11,50 @@ import pressure_expressions_sigma0_delay
 # Parameters
 #####################################
 
-#-------------------------------------#
+# -------------------------------------#
 # Dimensional Mechanical parameter definition
-#-------------------------------------#
-shear=2.0E10    # shear modulus (Pa)
-rho_roc=2700.0  # rock density (kg/m3)
-lenght_fault=1.0E3  # fault lenght (m)
-depth_fault=3.0E3   # fault depth (m)
-a_fric=0.005    # direct effect coefficient
-b_fric=0.01       # evolution effect coefficient
-dc=1.0E-3           # critical slip distance (m)
-V_p=1.0E-7        # tectonic speed (m/s)
-r_real = 1.0e2 # distance to the injection point (m)
+# -------------------------------------#
+shear = 2.0E10  # shear modulus (Pa)
+rho_roc = 2700.0  # rock density (kg/m3)
+lenght_fault = 1.0E3  # fault lenght (m)
+depth_fault = 3.0E3  # fault depth (m)
+a_fric = 0.005  # direct effect coefficient
+b_fric = 0.01  # evolution effect coefficient
+dc = 1.0E-3  # critical slip distance (m)
+V_p = 1.0E-9  # tectonic speed (m/s)
+r_real = 1.0e2  # distance to the injection point (m)
 c_real = 6.8e-4  # hydraulic diffusivity (m2/s)
-Pinf = 2.5e9     # injection pressure (Pa)
+Pinf = 2.5e7  # injection pressure (Pa)
 
-
-#-------------------------------------#
+# -------------------------------------#
 # ND Mechanical parameter definition
-#-------------------------------------#
-a= a_fric/b_fric
-eta=1.0E-11
-k=0.41
+# -------------------------------------#
+a = a_fric / b_fric
+eta = 1.0E-11
+k = 0.41
 
-#-------------------------------------------#
+# -------------------------------------------#
 # Computational parameter definition
-#-------------------------------------------#
-tol=1.0E-10   # error tolerance
-nitrkmax=30
-nitmax=10000  # maximum number of iterations
-hmin=1.0E-12  # minimum time step
-hmax=1.0E10   # maximum time step
-safe=0.8      # safety factor for RKF iterations
+# -------------------------------------------#
+tol = 1.0E-10  # error tolerance
+nitrkmax = 30
+nitmax = 10000  # maximum number of iterations
+hmin = 1.0E-12  # minimum time step
+hmax = 1.0E10  # maximum time step
+safe = 0.8  # safety factor for RKF iterations
 
-#-------------------------------------------#
+# -------------------------------------------#
 # Initial conditions (ND variables)
-#-------------------------------------------#
-v=1       # initial slip rate (ND)
-th=1/v      # initial state variable (ND)
-sigma_n=1.0  # initial normal stress (ND)
+# -------------------------------------------#
+v = 1  # initial slip rate (ND)
+th = 1 / v  # initial state variable (ND)
+sigma_n = 1.0  # initial normal stress (ND)
 
-t=0.001       # initial time (ND)
-h=0.001     # initial time step
+t = 0.001  # initial time (ND)
+h = 0.001  # initial time step
 
-psi=np.pi/4 # fault angle (radians)
-f0=0.6
+psi = np.pi / 4  # fault angle (radians)
+f0 = 0.6
 
 phi=np.log(v)
 nu=np.log(th)
@@ -316,6 +315,7 @@ if __name__ == "__main__": # to allow import without running the simulation
     Tau = np.array([f*sigma_n])
     Dphi=np.array([])
     Dnu=np.array([])
+    Delta = np.array([0.0])
 
     for iter in range(0,pc.nitmax,1):
         #--update phi, nu and h
@@ -333,6 +333,7 @@ if __name__ == "__main__": # to allow import without running the simulation
         Tau = np.append(Tau, [f*(sigma_n-P(t, pd, pnd))])
         Dphi=np.append(Dphi,[dphi])
         Dnu=np.append(Dnu,[dnu])
+        Delta = np.append(Delta, [Delta[-1] + np.exp(phi) * h])
 
 
     V=np.exp(Phi)
@@ -343,5 +344,5 @@ if __name__ == "__main__": # to allow import without running the simulation
 
 
     # save results
-    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, pd, pnd, pc, P=Pvalues, filename = 'without_pressure') # add filename if needed (filename = "custom_name.pkl")
+    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, Delta, pd, pnd, pc, P=Pvalues) # add filename if needed (filename = "custom_name.pkl")
     r.save_results('taux_0_to_1')
