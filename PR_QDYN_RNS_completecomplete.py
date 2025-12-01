@@ -5,6 +5,7 @@ import pickle
 #from PR_QDYN_RNS import ParamMec, NdParamMec, ParamComp  # type: ignore
 from result import Result
 import pressure_expressions_sigma0_delay
+from cycle_detection import find_cycle_start
 
 #####################################
 # Parameters
@@ -20,10 +21,10 @@ depth_fault = 3.0E3  # fault depth (m)
 a_fric = 0.005  # direct effect coefficient
 b_fric = 0.01  # evolution effect coefficient
 dc = 1.0E-3  # critical slip distance (m)
-V_p = 1.0E-7  # tectonic speed (m/s)
+V_p = 1.0E-9  # tectonic speed (m/s)
 r_real = 1.0e2  # distance to the injection point (m)
 c_real = 6.8e-4  # hydraulic diffusivity (m2/s)
-Pinf = 2.5e8  # injection pressure (Pa)
+Pinf = 2.5e7  # injection pressure (Pa)
 
 # -------------------------------------#
 # ND Mechanical parameter definition
@@ -58,11 +59,14 @@ f0 = 0.6
 phi = np.log(v)
 nu = np.log(th)
 
+taux = 1
+path_without_pressure = 'Results/taux_0_to_1/without_pressure'
+delay = find_cycle_start(path_without_pressure,taux)
 
 class ParamMec:
     "Dimensional Mechanical parameters"
 
-    def __init__(self, shear, rho_rock, lenght_fault, depth_fault, a_fric, b_fric, dc, V_p, X=0.0, Y=0.0, r_real=None, c_real = 1.0, Pinf= 1.0, cste=1.0):
+    def __init__(self, shear, rho_rock, lenght_fault, depth_fault, a_fric, b_fric, dc, V_p, X=0.0, Y=0.0, r_real=None, c_real = 1.0, Pinf= 1.0, V_inj=1e-2):
         self.shear = shear
         self.rho_rock = rho_rock
         self.lenght_fault = lenght_fault
@@ -84,7 +88,8 @@ class ParamMec:
         self.eta_visc = np.sqrt(shear * rho_rock) / 2.  # viscosity
         self.lambd = (2*self.shear*0.25)/(1-2*0.25)
         self.lambdu = (2*self.shear*(1-0.3))/(1-2*0.3)
-        self.cste = cste
+        self.V_inj = V_inj
+        self.cste = self.V_inj * self.shear * (self.lambdu - self.lambd) / (4*np.pi**self.c_real*self.r_real*(self.a_fric/self.b_fric)*(self.lambdu+self.shear*2))
 
 class NdParamMec:
     "Non dimensional Mechanical parameters"
@@ -222,9 +227,9 @@ def f_rns(phi, nu, pnd):
 
 
 def phi_rns(t, phi, nu, sigma_n, pnd):
-    F = pnd.k * (1 - spsi * np.exp(phi)) * spsi - (np.exp(-nu) - np.exp(phi)) * (sigma_n + sigma_te_y(t,pd,pnd) - P(t, pd, pnd)) + f_rns(phi, nu, pnd) * (
+    F = pnd.k * (1 - spsi * np.exp(phi)) * spsi - (np.exp(-nu) - np.exp(phi)) * (sigma_n + sigma_te_y(t,pd,pnd) - P(t, pd, pnd, delay)) + f_rns(phi, nu, pnd) * (
                     pnd.k * (1 - spsi * np.exp(phi)) * cpsi - dP(t, pd, pnd) + sigma_te_y_deriv(t,pd,pnd)) + sigma_te_x_deriv(t,pd,pnd) * (pd.dc/(pd.V_p*pd.b_fric))
-    F = F / (pnd.a * (sigma_n + sigma_te_y(t,pd,pnd) - P(t, pd, pnd)) + pnd.eta * np.exp(phi))
+    F = F / (pnd.a * (sigma_n + sigma_te_y(t,pd,pnd) - P(t, pd, pnd, delay)) + pnd.eta * np.exp(phi))
 
     return F
 
@@ -370,9 +375,9 @@ if __name__ == "__main__":  # to allow import without running the simulation
         T = np.append(T, [t])
         Phi = np.append(Phi, [phi])
         Nu = np.append(Nu, [nu])
-        Sigma_n = np.append(Sigma_n, [sigma_n + sigma_te_y(t, pd, pnd) - P(t, pd, pnd)])
+        Sigma_n = np.append(Sigma_n, [sigma_n + sigma_te_y(t, pd, pnd) - P(t, pd, pnd,delay)])
         F = np.append(F, [f_rns(phi, nu, pnd)])
-        Tau = np.append(Tau, [f * (sigma_n + sigma_te_y(t, pd, pnd) - P(t, pd, pnd))])
+        Tau = np.append(Tau, [f * (sigma_n + sigma_te_y(t, pd, pnd) - P(t, pd, pnd,delay))])
         Dphi = np.append(Dphi, [dphi])
         Dnu = np.append(Dnu, [dnu])
         Delta = np.append(Delta, [Delta[-1] + np.exp(phi) * h])
@@ -381,9 +386,9 @@ if __name__ == "__main__":  # to allow import without running the simulation
     Dt = np.diff(T)
     Phipoint = Dphi / Dt
     Vpoint = V[1:] * Phipoint
-    Pvalues = np.array([pd.sigma_n0 * P(t, pd, pnd) for t in T])
+    Pvalues = np.array([pd.sigma_n0 * P(t, pd, pnd,delay) for t in T])
 
     # save results
     r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, Delta, pd, pnd, pc, P=Pvalues,
-               filename='with_pressure_delay2')  # add filename if needed (filename = "custom_name.pkl")
-    r.save_results('PR_QDYN_RNS_modele_oriente')
+               filename='zizi')  # add filename if needed (filename = "custom_name.pkl")
+    r.save_results('poroprouti')
