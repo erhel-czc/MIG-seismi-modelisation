@@ -2,7 +2,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 import numpy.random
-from model2 import result1D as r
+import result1D as r
 
 #-------------------------------------------#
 # Computational parameter definition
@@ -285,7 +285,7 @@ for iter in range(0,pc.nitmax,1):
         Nu=np.reshape(Nu,(int(len(Nu)/(pc.n)),pc.n))
 
 
-sim = r.Result(T=T, V=np.exp(Phi), Nu=Nu, Phi=Phi, pd=pnd, pnd=pnd, pc=pc, filename='test_simulation.pkl')
+sim = r.Result1D(T=T, V=np.exp(Phi), Nu=Nu, Phi=Phi, pd=pnd, pnd=pnd, pc=pc, filename='test_simulation.pkl')
 sim.save_results(folder_name='test')
 
 #-------------------------------------------#
