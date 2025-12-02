@@ -80,7 +80,7 @@ phi=np.log(v0)*np.ones(pc.n)
 nu=np.log(th0)*np.ones(pc.n)
 
 phi[iasp]=np.log(0.001)
-#pnd.a[ianti]=7
+pnd.a[ianti]=7
 
 
 def gthilb(phi,pc):
