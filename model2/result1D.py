@@ -6,12 +6,12 @@ import numpy as np
 class Result1D:
     "Results storage"
 
-    def __init__(self, T, V, Nu, Phi, pd, pnd, pc, filename = ''):
+    def __init__(self, x, T, V, Nu, Phi, pnd, pc, filename = ''):
+        self.x=x
         self.T=T
         self.V=V
         self.Nu=Nu
         self.Phi=Phi
-        self.pd=pd
         self.pnd=pnd
         self.pc=pc
 
@@ -80,6 +80,45 @@ class Result1D:
 
         if save:
             if name != '':
-                plt.savefig(f"{path}/theta_evolution_{name}.png", dpi=300)
+                plt.savefig(f"{path}/theta_evolution_{name}.png")
             else:
-                plt.savefig(f"{path}/theta_evolution.png", dpi=300)
+                plt.savefig(f"{path}/theta_evolution.png")
+
+    def slip_rate_evolution(self, save = False, path = '', name=''):
+        plt.figure('Slip rate evolution')
+
+        plt.contour(self.x,self.T,np.log10(self.V))
+
+        """plt.contour(self.x,np.log10(np.max(T)-T[0:1000]),np.log10(np.exp(Phi[0:1000])),30)
+        plt.contour(x,T,np.log10(np.exp(Phi)),30)
+        plt.contour(x,np.log10(T[1:pc.nitmax+1]),np.log10(np.exp(Phi[1:pc.nitmax+1])),30)"""
+        plt.xlabel('Position along the fault (ND)')
+        plt.ylabel('Time (ND)')
+        plt.grid()
+        plt.colorbar()
+
+    def slip_rate_evolution_3D(self, save=False, path='', name=''):
+        """3D surface plot of slip rate: axes = position (x), time (T), log10(V) as Z.
+
+        Usage: call `result.sliprateevolution()` on a `Result1D` instance.
+        """
+        from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
+
+        fig = plt.figure('Slip rate 3D evolution')
+        ax = fig.add_subplot(projection='3d')
+
+        # Create meshgrid matching the contour call: X (positions) repeated along rows,
+        # Y (times) repeated along columns so shapes match V (T x x).
+        X, Y = np.meshgrid(self.x, self.T)
+        Z = np.log10(self.V)
+
+        # Plot a surface. Use a colormap to emphasize magnitude.
+        """surf = ax.plot_surface(X, Y, Z, cmap='viridis', rstride=1, cstride=1,
+                               linewidth=0, antialiased=True)"""
+
+        surf = ax.plot_surface(X, Y, Z, cmap='viridis')
+
+        ax.set_xlabel('Position along the fault (ND)')
+        ax.set_ylabel('Time (ND)')
+
+        fig.colorbar(surf, label='Log10 Slip rate (ND)')

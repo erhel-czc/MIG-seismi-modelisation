@@ -286,13 +286,13 @@ if __name__ == "__main__":
             Nu=np.reshape(Nu,(int(len(Nu)/(pc.n)),pc.n))
     
     
-    sim = r.Result1D(T=T, V=np.exp(Phi), Nu=Nu, Phi=Phi, pd=pnd, pnd=pnd, pc=pc, filename='test_simulation.pkl')
+    sim = r.Result1D(x, T, np.exp(Phi), Nu, Phi, pnd, pc, filename='test_simulation.pkl')
     sim.save_results(folder_name='test')
 
-#-------------------------------------------#
+"""#-------------------------------------------#
 # Plot
 #-------------------------------------------#
-"""plt.contour(x,np.log10(np.max(T)-T[0:1000]),np.log10(np.exp(Phi[0:1000])),30)
+plt.contour(x,np.log10(np.max(T)-T[0:1000]),np.log10(np.exp(Phi[0:1000])),30)
 plt.contour(x,T,np.log10(np.exp(Phi)),30)
 plt.contour(x,np.log10(T[1:pc.nitmax+1]),np.log10(np.exp(Phi[1:pc.nitmax+1])),30)
 plt.colorbar(orientation='vertical')
@@ -306,6 +306,5 @@ plt.show()
 
 # plt.figure('Phi evolution')
 # plt.plot(T,pnd.a*Phi+Nu,'-+k')
-plt.show()
+plt.show()"""
 
-"""
