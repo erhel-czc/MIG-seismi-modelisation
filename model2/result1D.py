@@ -69,7 +69,18 @@ class Result1D:
         return data
 
     def theta_evolution(self, save = False, path = '', name=''):
-        """Plot state variable evolution"""
+        """
+        Plot the theta evolution.
+
+        Parameters
+        ----------
+        save : bool
+            If True, save the figure in the given path.
+        path : str
+            The path where the figure will be saved.
+        name : str
+            The name of the figure to save.
+        """
         plt.figure('Theta evolution')
 
         plt.plot(self.T,self.Nu,'-k')
@@ -85,6 +96,18 @@ class Result1D:
                 plt.savefig(f"{path}/theta_evolution_{self.filename}.pdf")
 
     def slip_rate_evolution(self, save = False, path = '', name=''):
+        """
+        Plot the slip rate evolution.
+
+        Parameters
+        ----------
+        save : bool
+            If True, save the figure in the given path.
+        path : str
+            The path where the figure will be saved.
+        name : str
+            The name of the figure to save.
+        """
         plt.figure('Slip rate evolution')
 
         plt.contour(self.x,self.T,np.log10(self.V),30)
@@ -101,8 +124,19 @@ class Result1D:
                 plt.savefig(f"{path}/slip_rate_evolution_{self.filename}.pdf")
 
     def slip_rate_evolution_3D(self, save=False, path='', name=''):
-        """3D surface plot of slip rate: axes = position (x), time (T), log10(V) as Z.
         """
+        Plot the slip rate evolution in 3D.
+
+        Parameters
+        ----------
+        save : bool
+            If True, save the figure in the given path.
+        path : str
+            The path where the figure will be saved.
+        name : str
+            The name of the figure to save.
+        """
+        
         from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
 
         fig = plt.figure('Slip rate 3D evolution')
@@ -129,10 +163,18 @@ class Result1D:
                 plt.savefig(f"{path}/slip_rate_evolution_3D_{self.filename}.pdf")
 
     def slip_rate_evolution_map(self, save=False, path='', name=''):
-        """2D colormap of slip rate: axes = position (x), time (T), log10(V) as color.
-
         """
+        Plot the slip rate evolution in a colormap.
 
+        Parameters
+        ----------
+        save : bool
+            If True, save the figure in the given path.
+        path : str
+            The path where the figure will be saved.
+        name : str
+            The name of the figure to save.
+        """
         plt.figure("Slip rate colormap evolution")
 
         plt.pcolormesh(self.x, self.T, np.log10(self.V), cmap='viridis', shading='auto')
