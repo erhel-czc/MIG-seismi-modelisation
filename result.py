@@ -5,7 +5,7 @@ import numpy as np
 class Result:
     "Results storage"
 
-    def __init__(self, T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, Delta, pd, pnd, pc, P=None, filename = ''):
+    def __init__(self, T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, Delta, pd, pnd, pc, P=None, q=None, filename = ''):
         self.T=T
         self.V=V
         self.Vpoint=Vpoint
@@ -19,6 +19,7 @@ class Result:
         self.pnd=pnd
         self.pc=pc
         self.P = P
+        self.q = q
 
         if filename=='':
             if Sigma_n is not None:
@@ -156,9 +157,10 @@ class Result:
         if print_result :
             if len(periods)>0:
                 print(f"Cycles: {periods*self.pd.dc/self.pd.V_p} in s for {self.filename}.")
-                return(periods)
             else:
                 print(f"No cycle detected for {self.filename}.")
+        
+        return periods
 
 
     def slip_rate_evolution(self, save=False, path='', name=''):
@@ -211,9 +213,9 @@ class Result:
         #plt.savefig('images/modif_parameters/slip_rate_k%.2f_a%.2f.pdf' % (self.pnd.k, self.pnd.a))
         if save:
             if name == '':
-                plt.savefig(f'{path}/slip_rate_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
+                plt.savefig(f'{path}/displacement_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
             else:
-                plt.savefig(f'{path}/slip_rate_{name}.pdf')
+                plt.savefig(f'{path}/displacement_{name}.pdf')
 
     def phase_portrait(self, save=False, path='', name=''):
         """
@@ -326,6 +328,23 @@ class Result:
                 plt.savefig(f'{path}/pressure_evol_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
             else:
                 plt.savefig(f'{path}/pressure_evol_{name}.pdf')
+
+    def flow_rate(self, save=False, path='', name=''):
+
+        plt.figure('Flow rate')
+
+        plt.plot(self.T*self.pd.dc/self.pd.V_p, self.q, '-k') # type: ignore
+        plt.xlabel('Time (s)')
+        plt.ylabel('Flow Rate (kg/s)')
+        plt.title(r'Flow rate')
+        plt.grid()
+
+        if save:
+            if name == '':
+                plt.savefig(f'{path}/flow_rate_k{round(self.pnd.k,2)}_a{round(self.pnd.a,2)}.pdf')
+            else:
+                plt.savefig(f'{path}/flow_rate{name}.pdf')
+
 
     def fft_cycle_period(self, output=False, threshold_amplitude=0.05, save=False, path='', name=''):
         """

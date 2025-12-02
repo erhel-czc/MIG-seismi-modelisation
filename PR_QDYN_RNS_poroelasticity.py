@@ -53,15 +53,15 @@ sigma_n = 1.0  # initial normal stress (ND)
 t = 0.001  # initial time (ND)
 h = 0.001  # initial time step
 
-psi = np.pi / 3  # fault angle (radians)
+psi = np.pi / 4  # fault angle (radians)
 f0 = 0.6
 
 phi = np.log(v)
 nu = np.log(th)
 
-taux = 1
+
 path_without_pressure = 'Results/taux_0_to_1/without_pressure'
-delay = find_cycle_start(path_without_pressure,taux)
+delay = 0
 
 class ParamMec:
     "Dimensional Mechanical parameters"
@@ -354,41 +354,56 @@ def rkf(t, phi, nu, sigma_n, f, h, pnd, pc):
 # -------------------------------------------#
 
 if __name__ == "__main__":  # to allow import without running the simulation
-    T = np.array([t])
-    Phi = np.array([phi])
-    Nu = np.array([nu])
-    Sigma_n = np.array([sigma_n])
-    F = np.array([f])
-    Tau = np.array([f * sigma_n])
-    Dphi = np.array([])
-    Dnu = np.array([])
-    Delta = np.array([0.0])
+    for angle in np.linspace(0, 2 * np.pi, 100):
+        t = 0.001  # initial time (ND)
+        h = 0.001  # initial time step
+        v = 1  # initial slip rate (ND)
+        th = 1 / v  # initial state variable (ND)
+        sigma_n = 1.0  # initial normal stress (ND)
+        phi = np.log(v)
+        nu = np.log(th)
+        f = pnd.f0 + pnd.a * pnd.b * np.log(v) + pnd.b * np.log(th)
 
-    for iter in range(0, pc.nitmax, 1):
-        # --update phi, nu and h
-        phi, nu, sigma_n, dphi, dnu, dsigma, h = rkf(t, phi, nu, sigma_n, f, h, pnd, pc)
+        T = np.array([t])
+        Pvalues = np.array([pd.sigma_n0 * P(t, pd, pnd, delay)])
+        Phi = np.array([phi])
+        Nu = np.array([nu])
+        Sigma_n = np.array([sigma_n])
+        F = np.array([f])
+        Tau = np.array([f * sigma_n])
+        Dphi = np.array([])
+        Dnu = np.array([])
+        Delta = np.array([0.0])
+        pd.X = 1e3 * np.cos(angle)
+        pd.Y = 1e3 * np.sin(angle)
+        pd.r_real = 1e3
 
-        # --update time
-        t += h
+        for iter in range(0, pc.nitmax, 1):
+            # --update phi, nu and h
+            phi, nu, sigma_n, dphi, dnu, dsigma, h = rkf(t, phi, nu, sigma_n, f, h, pnd, pc)
 
-        # --store results
-        T = np.append(T, [t])
-        Phi = np.append(Phi, [phi])
-        Nu = np.append(Nu, [nu])
-        Sigma_n = np.append(Sigma_n, [sigma_n + sigma_te_y(t, pd, pnd) - P(t, pd, pnd,delay)])
-        F = np.append(F, [f_rns(phi, nu, pnd)])
-        Tau = np.append(Tau, [f * (sigma_n + sigma_te_y(t, pd, pnd) - P(t, pd, pnd,delay))])
-        Dphi = np.append(Dphi, [dphi])
-        Dnu = np.append(Dnu, [dnu])
-        Delta = np.append(Delta, [Delta[-1] + np.exp(phi) * h])
+            # --update time
+            t += h
 
-    V = np.exp(Phi)
-    Dt = np.diff(T)
-    Phipoint = Dphi / Dt
-    Vpoint = V[1:] * Phipoint
-    Pvalues = np.array([pd.sigma_n0 * P(t, pd, pnd,delay) for t in T])
+            # --store results
+            T = np.append(T, [t])
+            Pvalues = np.append(Pvalues, [pd.sigma_n0 * P(t, pd, pnd, delay)])
+            Phi = np.append(Phi, [phi])
+            Nu = np.append(Nu, [nu])
+            Sigma_n = np.append(Sigma_n, [sigma_n + sigma_te_y(t, pd, pnd) - P(t, pd, pnd,delay)])
+            F = np.append(F, [f_rns(phi, nu, pnd)])
+            Tau = np.append(Tau, [f * (sigma_n + sigma_te_y(t, pd, pnd) - P(t, pd, pnd,delay))])
+            Dphi = np.append(Dphi, [dphi])
+            Dnu = np.append(Dnu, [dnu])
+            Delta = np.append(Delta, [Delta[-1] + np.exp(phi) * h])
 
-    # save results
-    r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, Delta, pd, pnd, pc, P=Pvalues,
-               filename='zizi')  # add filename if needed (filename = "custom_name.pkl")
-    r.save_results('poroprouti')
+        V = np.exp(Phi)
+        Dt = np.diff(T)
+        Phipoint = Dphi / Dt
+        Vpoint = V[1:] * Phipoint
+
+        # save results
+        r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, Delta, pd, pnd, pc, P=Pvalues,
+                   filename=f'{angle}')  # add filename if needed (filename = "custom_name.pkl")
+        r.save_results('Poroelasticity/100bis/')
+        print(angle)
