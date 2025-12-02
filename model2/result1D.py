@@ -80,27 +80,28 @@ class Result1D:
 
         if save:
             if name != '':
-                plt.savefig(f"{path}/theta_evolution_{name}.png")
+                plt.savefig(f"{path}/theta_evolution_{name}.pdf")
             else:
-                plt.savefig(f"{path}/theta_evolution.png")
+                plt.savefig(f"{path}/theta_evolution_{self.filename}.pdf")
 
     def slip_rate_evolution(self, save = False, path = '', name=''):
         plt.figure('Slip rate evolution')
 
-        plt.contour(self.x,self.T,np.log10(self.V))
+        plt.contour(self.x,self.T,np.log10(self.V),30)
 
-        """plt.contour(self.x,np.log10(np.max(T)-T[0:1000]),np.log10(np.exp(Phi[0:1000])),30)
-        plt.contour(x,T,np.log10(np.exp(Phi)),30)
-        plt.contour(x,np.log10(T[1:pc.nitmax+1]),np.log10(np.exp(Phi[1:pc.nitmax+1])),30)"""
         plt.xlabel('Position along the fault (ND)')
         plt.ylabel('Time (ND)')
         plt.grid()
-        plt.colorbar()
+        plt.colorbar(label='Log10 Slip rate (ND)')
+
+        if save:
+            if name != '':
+                plt.savefig(f"{path}/slip_rate_evolution_{name}.pdf")
+            else:
+                plt.savefig(f"{path}/slip_rate_evolution_{self.filename}.pdf")
 
     def slip_rate_evolution_3D(self, save=False, path='', name=''):
         """3D surface plot of slip rate: axes = position (x), time (T), log10(V) as Z.
-
-        Usage: call `result.sliprateevolution()` on a `Result1D` instance.
         """
         from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
 
@@ -112,13 +113,36 @@ class Result1D:
         X, Y = np.meshgrid(self.x, self.T)
         Z = np.log10(self.V)
 
-        # Plot a surface. Use a colormap to emphasize magnitude.
-        """surf = ax.plot_surface(X, Y, Z, cmap='viridis', rstride=1, cstride=1,
-                               linewidth=0, antialiased=True)"""
-
         surf = ax.plot_surface(X, Y, Z, cmap='viridis')
+
+        ax.set_title('Slip rate evolution 3D')
 
         ax.set_xlabel('Position along the fault (ND)')
         ax.set_ylabel('Time (ND)')
 
         fig.colorbar(surf, label='Log10 Slip rate (ND)')
+
+        if save:
+            if name != '':
+                plt.savefig(f"{path}/slip_rate_evolution_3D_{name}.pdf")
+            else:
+                plt.savefig(f"{path}/slip_rate_evolution_3D_{self.filename}.pdf")
+
+    def slip_rate_evolution_map(self, save=False, path='', name=''):
+        """2D colormap of slip rate: axes = position (x), time (T), log10(V) as color.
+
+        """
+
+        plt.figure("Slip rate colormap evolution")
+
+        plt.pcolormesh(self.x, self.T, np.log10(self.V), cmap='viridis', shading='auto')
+        plt.xlabel('Position along the fault (ND)')
+        plt.ylabel('Time (ND)')
+        plt.grid()
+        plt.colorbar(label='Log10 Slip rate (ND)')
+
+        if save:
+            if name != '':
+                plt.savefig(f"{path}/slip_rate_evolution_map_{name}.pdf")
+            else:
+                plt.savefig(f"{path}/slip_rate_evolution_map_{self.filename}.pdf")

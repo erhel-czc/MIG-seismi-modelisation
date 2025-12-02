@@ -4,16 +4,21 @@ import matplotlib.pyplot as plt
 import numpy.random
 import result1D as r
 
+filename = 'test_simulation_1.pkl'
+
 #-------------------------------------------#
 # Computational parameter definition
 #-------------------------------------------#
 dx=0.2                           # grid size
 n=128                             # number of points
-tol=1.0E-7                        # error tolerance
+tol=1.0E-12                       # error tolerance
 ######################
-# préférer tol=1.0E-12 pour les simulations
+# préférer tol=1.0E-12 pour les simulations, peut être baissé à 1.0E-7 pour des tests rapides
+# ATTENTION changer aussi le nombre max d'itérations en conséquence
+######################
+
 nitrkmax=30                       # maximum number of iteration in a rkf step
-nitmax=10000                        # maximum number of iterations 
+nitmax=35000                        # maximum number of iterations 
 hmin=1.0E-12                      # minimum time step
 hmax=1.0E10                       # maximum time step (CFL for diffusion equation)
 safe=0.8                         # safety factor for RKF iterations
@@ -286,7 +291,7 @@ if __name__ == "__main__":
             Nu=np.reshape(Nu,(int(len(Nu)/(pc.n)),pc.n))
     
     
-    sim = r.Result1D(x, T, np.exp(Phi), Nu, Phi, pnd, pc, filename='test_simulation.pkl')
+    sim = r.Result1D(x, T, np.exp(Phi), Nu, Phi, pnd, pc, filename)
     sim.save_results(folder_name='test')
 
 """#-------------------------------------------#
