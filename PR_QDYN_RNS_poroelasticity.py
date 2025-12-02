@@ -355,7 +355,17 @@ def rkf(t, phi, nu, sigma_n, f, h, pnd, pc):
 
 if __name__ == "__main__":  # to allow import without running the simulation
     for angle in np.linspace(0, 2 * np.pi, 100):
+        t = 0.001  # initial time (ND)
+        h = 0.001  # initial time step
+        v = 1  # initial slip rate (ND)
+        th = 1 / v  # initial state variable (ND)
+        sigma_n = 1.0  # initial normal stress (ND)
+        phi = np.log(v)
+        nu = np.log(th)
+        f = pnd.f0 + pnd.a * pnd.b * np.log(v) + pnd.b * np.log(th)
+
         T = np.array([t])
+        Pvalues = np.array([pd.sigma_n0 * P(t, pd, pnd, delay)])
         Phi = np.array([phi])
         Nu = np.array([nu])
         Sigma_n = np.array([sigma_n])
@@ -366,6 +376,7 @@ if __name__ == "__main__":  # to allow import without running the simulation
         Delta = np.array([0.0])
         pd.X = 1e3 * np.cos(angle)
         pd.Y = 1e3 * np.sin(angle)
+        pd.r_real = 1e3
 
         for iter in range(0, pc.nitmax, 1):
             # --update phi, nu and h
@@ -376,6 +387,7 @@ if __name__ == "__main__":  # to allow import without running the simulation
 
             # --store results
             T = np.append(T, [t])
+            Pvalues = np.append(Pvalues, [pd.sigma_n0 * P(t, pd, pnd, delay)])
             Phi = np.append(Phi, [phi])
             Nu = np.append(Nu, [nu])
             Sigma_n = np.append(Sigma_n, [sigma_n + sigma_te_y(t, pd, pnd) - P(t, pd, pnd,delay)])
@@ -389,10 +401,9 @@ if __name__ == "__main__":  # to allow import without running the simulation
         Dt = np.diff(T)
         Phipoint = Dphi / Dt
         Vpoint = V[1:] * Phipoint
-        Pvalues = np.array([pd.sigma_n0 * P(t, pd, pnd,delay) for t in T])
 
         # save results
         r = Result(T, V, Vpoint, Nu, Phi, Phipoint, Tau, Sigma_n, Delta, pd, pnd, pc, P=Pvalues,
                    filename=f'{angle}')  # add filename if needed (filename = "custom_name.pkl")
-        r.save_results('Poroelasticity/100')
+        r.save_results('Poroelasticity/100bis/')
         print(angle)

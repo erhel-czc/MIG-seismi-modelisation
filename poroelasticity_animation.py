@@ -25,8 +25,8 @@ axes[0,1].set_title("Sigma evolution")
 axes[1,0].set_title("Pressure evolution")
 axes[1,1].set_title("Position par rapport à la source")
 
-axes[1,1].set_xlim(-R-1, R+1)
-axes[1,1].set_ylim(-R-1, R+1)
+axes[1,1].set_xlim(-R-100, R+100)
+axes[1,1].set_ylim(-R-100, R+100)
 axes[1,1].set_aspect("equal")
 
 slider_ax = fig.add_axes([0.2, 0.1, 0.6, 0.05])
@@ -41,7 +41,7 @@ angle_slider = Slider(
 axes[1,1].plot(R*np.cos(theta), R*np.sin(theta), 'gray', alpha=0.5)
 
 def update(index):
-    path = f'Results/Poroelasticity/100/{theta[index]}'
+    path = f'Results/Poroelasticity/100bis/{theta[index]}'
     data = Result.load_results(path)
     T =data.T * data.pd.dc / data.pd.V_p
     sliprate.set_data(T, data.Phi)
@@ -50,9 +50,15 @@ def update(index):
     x = R * np.cos(theta[index])
     y = R * np.sin(theta[index])
     position.set_data([x], [y])
-    for ax in axes.flatten():
-        ax.relim()
-        ax.autoscale_view()
+
+    axes[0,0].set_xlim(0, T[-1])
+    axes[0,0].set_ylim(np.min(data.Phi), np.max(data.Phi))
+    axes[0,1].set_xlim(0, T[-1])
+    axes[0,1].set_ylim(np.min(data.Sigma_n), np.max(data.Sigma_n))
+    axes[1,0].set_xlim(0, T[-1])
+    axes[1,0].set_ylim(np.min(data.P), np.max(data.P))
+
+
     fig.canvas.draw_idle()
 
 
