@@ -11,7 +11,7 @@ filename = 'asp_test_simulation_1.pkl'
 #-------------------------------------------#
 dx=0.2                           # grid size
 n=128                             # number of points
-tol=1.0E-7                        # error tolerance
+tol=1.0E-12                        # error tolerance
 ######################
 # préférer tol=1.0E-12 pour les simulations
 nitrkmax=30                       # maximum number of iteration in a rkf step
@@ -86,6 +86,24 @@ pnd.a[ianti]=7
 ######### ligne  à vérifier
 
 
+def taupinf(t):
+    taupinf_col = np.array([])
+    q=1
+    D=1
+    p0= 1
+    for i in range(pc.n):
+        eta = x[i]/(2*np.sqrt(D*t))
+        p = 2*q*np.sqrt(D*t)*(eta*(math.erf(eta)-1)+math.exp(-eta**2)/np.sqrt(np.pi))
+        p = p/p0
+        print(p)
+        taupinf_col = np.append(taupinf_col, p)
+    
+    #print(np.shape(taupinf_col))
+
+    return taupinf_col #np.reshape(taupinf_col, (pc.n,1))
+
+
+
 def gthilb(phi,pc):
     
     F=np.fft.fft(np.exp(phi))
@@ -114,7 +132,7 @@ def gthilb(phi,pc):
     
     return gth
 
-def frns(phi,nu,pnd,pc):
+def frns(phi,nu, t, pnd,pc):
     
     gth=gthilb(phi, pc)
     
@@ -124,7 +142,7 @@ def frns(phi,nu,pnd,pc):
     #print(np.shape(phi))
     #print(np.shape(nu))
 
-    F=-0.5*gth -(np.exp(phi)-1)/pnd.h + pnd.taupinf +pnd.b*(np.exp(phi)-np.exp(-nu))
+    F=-0.5*gth -(np.exp(phi)-1)/pnd.h + taupinf(t) +pnd.b*(np.exp(phi)-np.exp(-nu))
     
     #print(np.shape(F))
  
@@ -139,7 +157,7 @@ def grns(phi,nu):
 
     return F
 
-def rkf(phi,nu,h,pnd,pc):
+def rkf(phi,nu, t, h,pnd,pc):
     
 
     c21=1/4
@@ -183,7 +201,7 @@ def rkf(phi,nu,h,pnd,pc):
         # the 4th order RK estimate.
             
         
-        k1 = h * frns(phi,nu,pnd,pc)
+        k1 = h * frns(phi,nu, t, pnd,pc)
         l1 = h * grns(phi,nu)
         
         #print(np.shape(k1))
@@ -194,21 +212,21 @@ def rkf(phi,nu,h,pnd,pc):
         dphi = c21*k1
         dnu = c21*l1
         
-        k2 = h * frns(phi+dphi,nu+dnu,pnd,pc)
+        k2 = h * frns(phi+dphi,nu+dnu, t, pnd,pc)
         l2 = h * grns(phi+dphi,nu+dnu)
 
 
         dphi = c31*k1+c32*k2
         dnu = c31*l1+c32*l2
         
-        k3 = h * frns(phi+dphi,nu+dnu,pnd,pc)
+        k3 = h * frns(phi+dphi,nu+dnu,t, pnd,pc)
         l3 = h * grns(phi+dphi,nu+dnu)
 
 
         dphi = c41*k1+c42*k2+c43*k3
         dnu = c41*l1+c42*l2+c43*l3
         
-        k4 = h * frns(phi+dphi,nu+dnu,pnd,pc)
+        k4 = h * frns(phi+dphi,nu+dnu, t, pnd,pc)
         l4 = h * grns(phi+dphi,nu+dnu)
 
 
@@ -216,14 +234,14 @@ def rkf(phi,nu,h,pnd,pc):
         dphi = c51*k1+c52*k2+c53*k3+c54*k4
         dnu = c51*l1+c52*l2+c53*l3+c54*l4
 
-        k5 = h * frns(phi+dphi,nu+dnu,pnd,pc)
+        k5 = h * frns(phi+dphi,nu+dnu, t, pnd,pc)
         l5 = h * grns(phi+dphi,nu+dnu)
 
 
         dphi = c61*k1+c62*k2+c63*k3+c64*k4+c65*k5
         dnu = c61*l1+c62*l2+c63*l3+c64*l4+c65*l5
         
-        k6 = h * frns(phi+dphi,nu+dnu,pnd,pc)
+        k6 = h * frns(phi+dphi,nu+dnu,t, pnd,pc)
         l6 = h * grns(phi+dphi,nu+dnu)
 
 
@@ -268,7 +286,7 @@ if __name__ == "__main__":
             print("iteration ",iter," max iteration: ",pc.nitmax," time (nd): ",t," slip rate (nd): ",np.exp(np.max(phi)))
         
         #--update phi, nu and h
-        phi,nu,h = rkf(phi,nu,h,pnd,pc)
+        phi,nu,h = rkf(phi,nu, t, h,pnd,pc)
         
         #--update time
         t+=h
@@ -289,7 +307,7 @@ if __name__ == "__main__":
             Nu=np.reshape(Nu,(int(len(Nu)/(pc.n)),pc.n))
     
     
-    sim = r.Result1D(x, T, np.exp(Phi), Nu, Phi, pnd, pc, filename='test_simulation.pkl')
+    sim = r.Result1D(x, T, np.exp(Phi), Nu, Phi, pnd, pc, filename='test_simulation_pressure.pkl')
     sim.save_results(folder_name='test')
 
 """#-------------------------------------------#
