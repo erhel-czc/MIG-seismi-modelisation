@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy.random
 import result1D as r
 
-filename = 'asp_test_simulation_1.pkl'
+filename = 'test_simulation_1.pkl'
 
 #-------------------------------------------#
 # Computational parameter definition
@@ -13,7 +13,9 @@ dx=0.2                           # grid size
 n=128                             # number of points
 tol=1.0E-12                        # error tolerance
 ######################
-# préférer tol=1.0E-12 pour les simulations
+# préférer tol=1.0E-12 pour les simulations, tol=1.0E-7 pour les tests rapides
+######################
+
 nitrkmax=30                       # maximum number of iteration in a rkf step
 nitmax=50000                        # maximum number of iterations 
 hmin=1.0E-12                      # minimum time step
@@ -82,6 +84,7 @@ phi=np.log(v0)*np.ones(pc.n)
 nu=np.log(th0)*np.ones(pc.n)
 
 phi[iasp]=np.log(0.001)
+
 pnd.a[ianti]=7
 ######### ligne  à vérifier
 
@@ -126,8 +129,6 @@ def gthilb(phi,pc):
     
     gth=gthc.real
     
-   # print(np.shape(gth))
-    
     #gth=np.reshape(gth,(pc.n,1))
     
     return gth
@@ -141,6 +142,7 @@ def frns(phi,nu, t, pnd,pc):
     #print(np.shape(pnd.b))
     #print(np.shape(phi))
     #print(np.shape(nu))
+
 
     F=-0.5*gth -(np.exp(phi)-1)/pnd.h + taupinf(t) +pnd.b*(np.exp(phi)-np.exp(-nu))
     
@@ -309,23 +311,3 @@ if __name__ == "__main__":
     
     sim = r.Result1D(x, T, np.exp(Phi), Nu, Phi, pnd, pc, filename='test_simulation_pressure.pkl')
     sim.save_results(folder_name='test')
-
-"""#-------------------------------------------#
-# Plot
-#-------------------------------------------#
-plt.contour(x,np.log10(np.max(T)-T[0:1000]),np.log10(np.exp(Phi[0:1000])),30)
-plt.contour(x,T,np.log10(np.exp(Phi)),30)
-plt.contour(x,np.log10(T[1:pc.nitmax+1]),np.log10(np.exp(Phi[1:pc.nitmax+1])),30)
-plt.colorbar(orientation='vertical')
-plt.show()
-
-plt.plot(np.log10(np.max(T)-T[0:1000]),np.log10(np.exp(phimax[0:1000])),'-+k')
-plt.xlim([-5,-4.8])
-plt.plot(np.log10(T[1:pc.nitmax+1]),np.log10(np.exp(phimax[1:pc.nitmax+1])),'-+k')
-plt.plot(T,np.log10(np.exp(phimax)),'-+k')
-plt.show()
-
-# plt.figure('Phi evolution')
-# plt.plot(T,pnd.a*Phi+Nu,'-+k')
-plt.show()"""
-
