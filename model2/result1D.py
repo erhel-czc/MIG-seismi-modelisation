@@ -69,18 +69,7 @@ class Result1D:
         return data
 
     def theta_evolution(self, save = False, path = '', name=''):
-        """
-        Plot the theta evolution.
-
-        Parameters
-        ----------
-        save : bool
-            If True, save the figure in the given path.
-        path : str
-            The path where the figure will be saved.
-        name : str
-            The name of the figure to save.
-        """
+        """Plot state variable evolution"""
         plt.figure('Theta evolution')
 
         plt.plot(self.T,self.Nu,'-k')
@@ -91,52 +80,28 @@ class Result1D:
 
         if save:
             if name != '':
-                plt.savefig(f"{path}/theta_evolution_{name}.pdf")
+                plt.savefig(f"{path}/theta_evolution_{name}.png")
             else:
-                plt.savefig(f"{path}/theta_evolution_{self.filename}.pdf")
+                plt.savefig(f"{path}/theta_evolution.png")
 
     def slip_rate_evolution(self, save = False, path = '', name=''):
-        """
-        Plot the slip rate evolution.
-
-        Parameters
-        ----------
-        save : bool
-            If True, save the figure in the given path.
-        path : str
-            The path where the figure will be saved.
-        name : str
-            The name of the figure to save.
-        """
         plt.figure('Slip rate evolution')
 
-        plt.contour(self.x,self.T,np.log10(self.V),30)
+        plt.contour(self.x,self.T,np.log10(self.V))
 
+        """plt.contour(self.x,np.log10(np.max(T)-T[0:1000]),np.log10(np.exp(Phi[0:1000])),30)
+        plt.contour(x,T,np.log10(np.exp(Phi)),30)
+        plt.contour(x,np.log10(T[1:pc.nitmax+1]),np.log10(np.exp(Phi[1:pc.nitmax+1])),30)"""
         plt.xlabel('Position along the fault (ND)')
         plt.ylabel('Time (ND)')
         plt.grid()
-        plt.colorbar(label='Log10 Slip rate (ND)')
-
-        if save:
-            if name != '':
-                plt.savefig(f"{path}/slip_rate_evolution_{name}.pdf")
-            else:
-                plt.savefig(f"{path}/slip_rate_evolution_{self.filename}.pdf")
+        plt.colorbar()
 
     def slip_rate_evolution_3D(self, save=False, path='', name=''):
-        """
-        Plot the slip rate evolution in 3D.
+        """3D surface plot of slip rate: axes = position (x), time (T), log10(V) as Z.
 
-        Parameters
-        ----------
-        save : bool
-            If True, save the figure in the given path.
-        path : str
-            The path where the figure will be saved.
-        name : str
-            The name of the figure to save.
+        Usage: call `result.sliprateevolution()` on a `Result1D` instance.
         """
-        
         from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
 
         fig = plt.figure('Slip rate 3D evolution')
@@ -147,44 +112,13 @@ class Result1D:
         X, Y = np.meshgrid(self.x, self.T)
         Z = np.log10(self.V)
 
-        surf = ax.plot_surface(X, Y, Z, cmap='viridis')
+        # Plot a surface. Use a colormap to emphasize magnitude.
+        """surf = ax.plot_surface(X, Y, Z, cmap='viridis', rstride=1, cstride=1,
+                               linewidth=0, antialiased=True)"""
 
-        ax.set_title('Slip rate evolution 3D')
+        surf = ax.plot_surface(X, Y, Z, cmap='viridis')
 
         ax.set_xlabel('Position along the fault (ND)')
         ax.set_ylabel('Time (ND)')
 
         fig.colorbar(surf, label='Log10 Slip rate (ND)')
-
-        if save:
-            if name != '':
-                plt.savefig(f"{path}/slip_rate_evolution_3D_{name}.pdf")
-            else:
-                plt.savefig(f"{path}/slip_rate_evolution_3D_{self.filename}.pdf")
-
-    def slip_rate_evolution_map(self, save=False, path='', name=''):
-        """
-        Plot the slip rate evolution in a colormap.
-
-        Parameters
-        ----------
-        save : bool
-            If True, save the figure in the given path.
-        path : str
-            The path where the figure will be saved.
-        name : str
-            The name of the figure to save.
-        """
-        plt.figure("Slip rate colormap evolution")
-
-        plt.pcolormesh(self.x, self.T, np.log10(self.V), cmap='viridis', shading='auto')
-        plt.xlabel('Position along the fault (ND)')
-        plt.ylabel('Time (ND)')
-        plt.grid()
-        plt.colorbar(label='Log10 Slip rate (ND)')
-
-        if save:
-            if name != '':
-                plt.savefig(f"{path}/slip_rate_evolution_map_{name}.pdf")
-            else:
-                plt.savefig(f"{path}/slip_rate_evolution_map_{self.filename}.pdf")
