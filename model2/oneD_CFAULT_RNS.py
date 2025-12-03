@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy.random
 import result1D as r
 
-filename = 'test_simulation_1.pkl'
+filename = 'asp_test_simulation_1.pkl'
 
 #-------------------------------------------#
 # Computational parameter definition
@@ -18,7 +18,7 @@ tol=1.0E-12                       # error tolerance
 ######################
 
 nitrkmax=30                       # maximum number of iteration in a rkf step
-nitmax=35000                        # maximum number of iterations 
+nitmax=50000                        # maximum number of iterations 
 hmin=1.0E-12                      # minimum time step
 hmax=1.0E10                       # maximum time step (CFL for diffusion equation)
 safe=0.8                         # safety factor for RKF iterations
@@ -85,7 +85,8 @@ phi=np.log(v0)*np.ones(pc.n)
 nu=np.log(th0)*np.ones(pc.n)
 
 phi[iasp]=np.log(0.001)
-#pnd.a[ianti]=7
+pnd.a[ianti]=7
+######### ligne  à vérifier
 
 
 def gthilb(phi,pc):
