@@ -291,16 +291,3 @@ if __name__ == "__main__":
     
     sim = r.Result1D(x, T, np.exp(Phi), Nu, Phi, pnd, pc, filename='test_simulation.pkl')
     sim.save_results(folder_name='test')
-
-"""
-
-plt.plot(np.log10(np.max(T)-T[0:1000]),np.log10(np.exp(phimax[0:1000])),'-+k')
-plt.xlim([-5,-4.8])
-plt.plot(np.log10(T[1:pc.nitmax+1]),np.log10(np.exp(phimax[1:pc.nitmax+1])),'-+k')
-plt.plot(T,np.log10(np.exp(phimax)),'-+k')
-plt.show()
-
-# plt.figure('Phi evolution')
-# plt.plot(T,pnd.a*Phi+Nu,'-+k')
-plt.show()"""
-
