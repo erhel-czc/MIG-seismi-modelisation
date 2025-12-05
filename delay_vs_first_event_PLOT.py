@@ -396,5 +396,11 @@ if __name__ == "__main__":  # to allow import without running the simulation
         print(i)
         print(taux)
 
-plt.plot(taux_l[1:], (pd.dc/pd.V_p)*durations_event_injection[1:])
+plt.figure('Durations')
+
+plt.plot(taux_l[1:], (pd.dc/pd.V_p)*durations_event_injection[1:], 'k')
+plt.title('Delay vs first event')
+plt.xlabel('Ratio')
+plt.ylabel('Delay between injection and first event (s)')
+plt.grid()
 plt.show()
