@@ -8,7 +8,7 @@ import pressure_expressions_sigma0_delay
 from cycle_detection import find_cycle_start
 
 #####################################
-# Parameters
+# Parameters    
 #####################################
 
 # -------------------------------------#
@@ -24,7 +24,7 @@ dc = 1.0E-3  # critical slip distance (m)
 V_p = 1.0E-7  # tectonic speed (m/s)
 r_real = 1.0e2  # distance to the injection point (m)
 c_real = 6.8e-4  # hydraulic diffusivity (m2/s)
-Pinf = 2.5e8  # injection pressure (Pa)
+Pinf = 7e6  # injection pressure (Pa)
 
 # -------------------------------------#
 # ND Mechanical parameter definition
@@ -38,7 +38,7 @@ k = 0.41
 # -------------------------------------------#
 tol = 1.0E-10  # error tolerance
 nitrkmax = 30
-nitmax = 10000  # maximum number of iterations
+nitmax = 20000  # maximum number of iterations
 hmin = 1.0E-12  # minimum time step
 hmax = 1.0E10  # maximum time step
 safe = 0.8  # safety factor for RKF iterations
