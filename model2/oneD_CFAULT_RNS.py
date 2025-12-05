@@ -6,18 +6,31 @@ import result1D as r
 
 filename = 'test_simulation_1.pkl'
 
+#-------------------------------------#
+# Dimensional Mechanical parameter definition
+#-------------------------------------#
+
+shear = 2.0E10  # shear modulus (Pa)
+rho_roc = 2700.0  # rock density (kg/m3)
+depth_fault = 3.0E3  # fault depth (m)
+a_fric = 0.002  # direct effect coefficient
+b_fric = 0.01  # evolution effect coefficient
+dc = 1.0E-3  # critical slip distance (m)
+V_p = 1.0E-7  # tectonic speed (m/s)
+f0_real = 0.6
+
 #-------------------------------------------#
 # Computational parameter definition
 #-------------------------------------------#
 dx=0.2                           # grid size
 n=128                             # number of points
-tol=1.0E-12                        # error tolerance
+tol=1.0E-7                        # error tolerance
 ######################
 # préférer tol=1.0E-12 pour les simulations, tol=1.0E-7 pour les tests rapides
 ######################
 
 nitrkmax=30                       # maximum number of iteration in a rkf step
-nitmax=50000                        # maximum number of iterations 
+nitmax=100000                        # maximum number of iterations 
 hmin=1.0E-12                      # minimum time step
 hmax=1.0E10                       # maximum time step (CFL for diffusion equation)
 safe=0.8                         # safety factor for RKF iterations
@@ -25,27 +38,57 @@ safe=0.8                         # safety factor for RKF iterations
 #-------------------------------------#
 # ND Mechanical parameter definition
 #-------------------------------------#
-alpha=0.2
-eta=1.0E-8
+alpha=0.2   # réécrit plus tard
+eta=1.0E-8  # réécrit plus tard
+
+q = 0.01   # normalized change in pressure gradient
+D = 4.369   # normalized constant diffusivity
+
 
 #-------------------------------------------#
 # Initial conditions (ND variables)
 #-------------------------------------------#
 v0=1.0       # initial normalized slip rate
 th0=1/v0      # initial normalized state variable
-t=0.0       # initial time
+t=0.001       # initial time
 h=0.001     # initial time step
+
+
+class ParamMec:
+    "Dimensional Mechanical parameters"
+
+    def __init__(self, shear, rho_rock, depth_fault, a_fric, b_fric, dc, V_p, f0_real):
+        self.shear = shear
+        self.rho_rock = rho_rock
+        self.depth_fault = depth_fault
+        self.a_fric = a_fric
+        self.b_fric = b_fric
+        self.dc = dc
+        self.V_p = V_p
+        self.f0_real = f0_real
+        self.sigma_n0 = rho_rock * 9.81 * depth_fault  # lithospheric stress
+        self.eta_visc = np.sqrt(shear * rho_rock) / 2.  # viscosity
+        
+        #for ND
+        self.xc = shear*dc/(b_fric*self.sigma_n0)
+        self.tc = dc / V_p
+        self.Dc = self.xc**2/self.tc
+        self.qc = self.sigma_n0/self.xc
+
 
 class NdParamMec:
     "Non dimensional Mechanical parameters"
 
-    def __init__(self, alpha, eta, a, b, taupinf, h):
-        self.alpha = alpha
+    def __init__(self, alpha, eta, f0, a, b, q, D, h):
+        self.alpha = a_fric / b_fric
         self.eta = eta
+        self.f0 = f0
         self.a = a
         self.b = b
-        self.taupinf = taupinf
+        self.q = q
+        self.D = D
         self.h = h
+
 
 class ParamComp:
     "Computational parameters"
@@ -67,12 +110,21 @@ class ParamComp:
 pc=ParamComp(dx, n, tol, nitrkmax, nitmax, hmin, hmax, safe)
 
 #-------------------------------------#
+# Dimensional Mechanical parameter definition
+#-------------------------------------#
+
+pd = ParamMec(shear=shear, rho_rock=rho_roc, depth_fault=depth_fault, a_fric=a_fric, b_fric=b_fric, dc=dc, V_p=V_p, f0_real=f0_real)
+
+#-------------------------------------#
 # ND Mechanical parameter definition
 #-------------------------------------#
-pnd=NdParamMec(alpha, eta,
+pnd=NdParamMec(alpha=pd.a_fric/pd.b_fric, 
+               eta=pd.eta_visc * pd.V_p / (pd.b_fric * pd.sigma_n0),
+               f0=pd.f0_real/pd.b_fric,
                a=np.ones(pc.n),
                b=np.ones(pc.n),
-               taupinf=0.0*np.ones(pc.n),
+               q=q,
+               D=D,
                h=10*pc.n*pc.dx)
 
 x=np.arange(-0.5*pc.n*pc.dx,0.5*pc.n*pc.dx,pc.dx)
@@ -91,19 +143,23 @@ pnd.a[ianti]=7
 
 def taupinf(t):
     taupinf_col = np.array([])
-    q=1
-    D=1
-    p0= 1
     for i in range(pc.n):
-        eta = x[i]/(2*np.sqrt(D*t))
-        p = 2*q*np.sqrt(D*t)*(eta*(math.erf(eta)-1)+math.exp(-eta**2)/np.sqrt(np.pi))
-        p = p/p0
-        print(p)
+        eta_calc = np.abs(x[i]/(2*np.sqrt(pnd.D*t)))
+        p = 2*pnd.q*np.sqrt(pnd.D*t)*(eta_calc*(math.erf(eta_calc)-1)+math.exp(-eta_calc**2)/np.sqrt(np.pi))
         taupinf_col = np.append(taupinf_col, p)
     
     #print(np.shape(taupinf_col))
 
     return taupinf_col #np.reshape(taupinf_col, (pc.n,1))
+
+def d_taupinf(t):
+    d_taupinf_col = np.array([])
+    for i in range(pc.n):
+        eta_calc = np.abs(x[i]/(2*np.sqrt(pnd.D*t)))
+        dp = -2*pnd.q*np.sqrt(pnd.D*t)*((x[i]/pnd.D*t**3)*(math.erf(eta_calc)-1)+x[i]*eta_calc**2*math.exp(-eta_calc**2)/np.sqrt(4*pnd.D*t**3*np.pi) + 2*(x[i]/(2*np.sqrt(pnd.D*t)))*math.exp(-eta_calc**2)/np.sqrt(np.pi))
+        d_taupinf_col = np.append(d_taupinf_col, dp)
+
+    return d_taupinf_col
 
 
 
@@ -133,10 +189,15 @@ def gthilb(phi,pc):
     
     return gth
 
+def f(phi,nu):
+    return pnd.f0 + pnd.alpha*phi + nu
+
 def frns(phi,nu, t, pnd,pc):
     
     gth=gthilb(phi, pc)
-    
+    p=taupinf(t)
+    dp=d_taupinf(t)
+
     #print(np.shape(gth))
     #print(np.shape(pnd.taupinf))
     #print(np.shape(pnd.b))
@@ -144,11 +205,11 @@ def frns(phi,nu, t, pnd,pc):
     #print(np.shape(nu))
 
 
-    F=-0.5*gth -(np.exp(phi)-1)/pnd.h + taupinf(t) +pnd.b*(np.exp(phi)-np.exp(-nu))
+    F=-0.5*gth -(np.exp(phi)-1)/pnd.h + f(phi, nu)*dp + pnd.b*(np.exp(phi)-np.exp(-nu))*(1-p)
     
     #print(np.shape(F))
  
-    F=F/(pnd.alpha*pnd.a+pnd.eta*np.exp(phi))
+    F=F/((pnd.alpha*pnd.a+pnd.eta*np.exp(phi))*(1-p))
     
     #print(np.shape(F))  
     return F
